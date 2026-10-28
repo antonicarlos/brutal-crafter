@@ -4,22 +4,22 @@
 
 .DESCRIPTION
     Instala e configura a skill brutal-crafter para múltiplos assistentes de IA:
-    - Google Antigravity & Gemini CLI
-    - Claude Code
-    - OpenCode (%USERPROFILE%\.config\opencode e %USERPROFILE%\.opencode)
-    - OpenAI Codex / OpenDevin (%USERPROFILE%\.codex)
-    - Cursor IDE
-    - Windsurf (Codeium)
-    - GitHub Copilot
-    - Roo Code / Cline
+    - Google Antigravity (%USERPROFILE%\.antigravity\skills e %USERPROFILE%\.gemini\antigravity-cli\skills)
+    - Gemini CLI & Code Assist (%USERPROFILE%\.gemini\skills)
+    - Claude Code (%USERPROFILE%\.claude\skills e local CLAUDE.md)
+    - OpenCode (%USERPROFILE%\.config\opencode\skills e local .opencode\skills)
+    - OpenAI Codex / OpenDevin (%USERPROFILE%\.codex\skills)
+    - Cursor AI / Windsurf (.cursorrules, .cursor\rules\brutal-crafter.mdc, .windsurfrules)
+    - GitHub Copilot (.github\copilot-instructions.md)
+    - Roo Code / Cline (.clinerules)
     - Aider (CONVENTIONS.md)
-    - Continue.dev (.continue/prompts)
+    - Continue.dev (.continue\prompts)
 
 .PARAMETER All
     Instala em todos os agentes suportados / detectados.
 
 .PARAMETER Gemini
-    Instala no Google Antigravity e Gemini CLI (%USERPROFILE%\.gemini e %USERPROFILE%\.gemini\antigravity-cli).
+    Instala no Google Antigravity e Gemini CLI (%USERPROFILE%\.antigravity e %USERPROFILE%\.gemini).
 
 .PARAMETER Antigravity
     Alias para -Gemini.
@@ -33,8 +33,14 @@
 .PARAMETER Codex
     Instala no OpenAI Codex / OpenDevin (%USERPROFILE%\.codex\skills).
 
+.PARAMETER Project
+    Instala no projeto ativo (.cursorrules, CLAUDE.md, .github, .opencode e agent-rules-books).
+
+.PARAMETER Local
+    Alias para -Project.
+
 .PARAMETER Cursor
-    Configura regras para o Cursor IDE (.cursor\rules\brutal-crafter.mdc).
+    Configura regras para o Cursor AI (.cursorrules e .cursor\rules\brutal-crafter.mdc).
 
 .PARAMETER Windsurf
     Configura regras para o Windsurf (.windsurfrules local).
@@ -58,26 +64,29 @@
     Caminho de diretório customizado para instalação da pasta da skill.
 
 .PARAMETER Symlink
-    Cria junção de diretório / link simbólico (ideal para desenvolvimento). Requer permissão ou Modo de Desenvolvedor no Windows. Se falhar, faz cópia automática.
+    Cria junção de diretório / link simbólico (ideal para desenvolvimento).
+
+.PARAMETER Copy
+    Força a cópia física limpa dos 2 itens essenciais (padrão).
 
 .PARAMETER Uninstall
     Remove a skill dos alvos selecionados ou de todos.
 
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File .\install.ps1
-    # Auto-detecta e instala nos agentes presentes (Gemini, Claude, OpenCode).
+    # Auto-detecta e instala nos agentes presentes com cópia limpa.
 
 .EXAMPLE
-    powershell -ExecutionPolicy Bypass -File .\install.ps1 -OpenCode
-    # Instala especificamente no OpenCode.
+    powershell -ExecutionPolicy Bypass -File .\install.ps1 -Project
+    # Instala no projeto atual com agent-rules-books e regras locais.
+
+.EXAMPLE
+    powershell -ExecutionPolicy Bypass -File .\install.ps1 -Symlink
+    # Instala criando junções/links simbólicos (ideal para dev).
 
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File .\install.ps1 -All
     # Instala para todos os agentes suportados.
-
-.EXAMPLE
-    powershell -ExecutionPolicy Bypass -File .\install.ps1 -Symlink
-    # Instala criando links/junções diretas.
 
 .EXAMPLE
     powershell -ExecutionPolicy Bypass -File .\install.ps1 -Uninstall -All
@@ -92,6 +101,8 @@ param(
     [switch]$Claude,
     [switch]$OpenCode,
     [switch]$Codex,
+    [switch]$Project,
+    [switch]$Local,
     [switch]$Cursor,
     [switch]$Windsurf,
     [switch]$Copilot,
@@ -101,6 +112,7 @@ param(
     [switch]$Continue,
     [string]$Target = "",
     [switch]$Symlink,
+    [switch]$Copy,
     [switch]$Uninstall,
     [switch]$Help
 )
@@ -117,7 +129,7 @@ function Write-Err($msg)     { Write-Host "`u{2716} [ERRO] $msg" -ForegroundColo
 function Show-HelpMessage {
     Write-Host @"
 ==========================================================
- brutal-crafter - Instalador Universal Windows (PowerShell)
+ 🧠 brutal-crafter - Instalador Universal Windows (PowerShell)
 ==========================================================
 
 Uso:
@@ -129,7 +141,8 @@ Opções de Alvo:
   -Claude                  Instala no Claude Code (%USERPROFILE%\.claude\skills)
   -OpenCode                Instala no OpenCode (%USERPROFILE%\.config\opencode\skills)
   -Codex                   Instala no OpenAI Codex / OpenDevin (%USERPROFILE%\.codex\skills)
-  -Cursor                  Configura regras para Cursor IDE
+  -Project, -Local         Instala no projeto ativo (.cursorrules, CLAUDE.md, .github, .opencode, agent-rules-books)
+  -Cursor                  Configura regras para Cursor AI
   -Windsurf                Configura regras para Windsurf (.windsurfrules)
   -Copilot                 Configura instruções para GitHub Copilot
   -Cline, -Roo             Configura regras para Cline / Roo Code
@@ -139,11 +152,13 @@ Opções de Alvo:
 
 Modos:
   -Symlink                 Usa Junção / Link Simbólico (ideal para desenvolvimento)
+  -Copy                    Cópia limpa dos 2 itens essenciais (padrão)
   -Uninstall               Remove a skill dos agentes selecionados
   -Help                    Exibe esta ajuda
 
 Exemplos:
   .\install.ps1                      # Instalação com auto-detecção inteligente
+  .\install.ps1 -Project             # Instala no projeto ativo com livros de regras
   .\install.ps1 -OpenCode            # Instala apenas no OpenCode
   .\install.ps1 -All                 # Instala em todos os agentes
   .\install.ps1 -Symlink             # Instala com Junction/Symlink
@@ -155,6 +170,10 @@ if ($Help) {
     Show-HelpMessage
     exit 0
 }
+
+if ($Antigravity) { $Gemini = $true }
+if ($Roo) { $Cline = $true }
+if ($Local) { $Project = $true }
 
 # Valida pasta fonte
 $SkillFile = Join-Path $ScriptDir "SKILL.md"
@@ -168,7 +187,7 @@ if (-not (Test-Path $BooksDir)) {
     Write-Warn "agent-rules-books\ não encontrado. A skill rodará sem a base de livros clássicos."
 }
 
-# Função de deploy de pasta
+# Função de deploy de pasta (cópia limpa dos 2 itens essenciais ou junction/symlink)
 function Deploy-SkillFolder($targetDir, [bool]$asSymlink) {
     $parent = Split-Path -Parent $targetDir
     if (-not (Test-Path $parent)) {
@@ -193,32 +212,85 @@ function Deploy-SkillFolder($targetDir, [bool]$asSymlink) {
                 return
             }
             catch {
-                Write-Warn "Não foi possível criar link simbólico ou junction (falta de permissão). Realizando cópia física..."
+                Write-Warn "Não foi possível criar link simbólico ou junction. Realizando cópia física limpa..."
             }
         }
     }
 
-    # Cópia física
+    # Cópia física limpa dos 2 itens essenciais: SKILL.md e agent-rules-books\
     New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
     Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $targetDir -Force
+
+    if (Test-Path $BooksDir) {
+        $targetBooksDir = Join-Path $targetDir "agent-rules-books"
+        New-Item -ItemType Directory -Path $targetBooksDir -Force | Out-Null
+        Copy-Item -Path (Join-Path $BooksDir "*") -Destination $targetBooksDir -Recurse -Force
+    }
+
     if (Test-Path (Join-Path $ScriptDir "README.md")) {
         Copy-Item -Path (Join-Path $ScriptDir "README.md") -Destination $targetDir -Force
     }
-    if (Test-Path (Join-Path $ScriptDir "ESTRUTURA.md")) {
-        Copy-Item -Path (Join-Path $ScriptDir "ESTRUTURA.md") -Destination $targetDir -Force
-    }
-    $targetBooksDir = Join-Path $targetDir "agent-rules-books"
-    if (Test-Path $BooksDir) {
-        if (-not (Test-Path $targetBooksDir)) {
-            New-Item -ItemType Directory -Path $targetBooksDir -Force | Out-Null
-        }
-        Copy-Item -Path (Join-Path $BooksDir "*") -Destination $targetBooksDir -Recurse -Force
+    if (Test-Path (Join-Path $ScriptDir "LICENSE")) {
+        Copy-Item -Path (Join-Path $ScriptDir "LICENSE") -Destination $targetDir -Force
     }
 
     # Aliases de compatibilidade
     Copy-Item -Path (Join-Path $targetDir "SKILL.md") -Destination (Join-Path $targetDir "CLAUDE.md") -Force
     Copy-Item -Path (Join-Path $targetDir "SKILL.md") -Destination (Join-Path $targetDir ".cursorrules") -Force
-    Write-Success "Copiado com sucesso para: $targetDir"
+    Write-Success "Cópia limpa realizada com sucesso para: $targetDir"
+}
+
+# Deploy no projeto ativo local
+function Deploy-ProjectLocal([bool]$asSymlink) {
+    $currentDir = (Get-Location).Path
+    Write-Info "Instalando no projeto ativo ($currentDir)..."
+
+    $cursorRules = Join-Path $currentDir ".cursorrules"
+    $claudeMd = Join-Path $currentDir "CLAUDE.md"
+    $githubDir = Join-Path $currentDir ".github"
+    $copilotInstructions = Join-Path $githubDir "copilot-instructions.md"
+    $localBooksDir = Join-Path $currentDir "agent-rules-books"
+    $localOpenCodeDir = Join-Path $currentDir ".opencode\skills\$SkillName"
+
+    if (-not (Test-Path $githubDir)) { New-Item -ItemType Directory -Path $githubDir -Force | Out-Null }
+
+    if ($asSymlink) {
+        try {
+            New-Item -ItemType SymbolicLink -Path $cursorRules -Target (Join-Path $ScriptDir "SKILL.md") -Force | Out-Null
+            New-Item -ItemType SymbolicLink -Path $claudeMd -Target (Join-Path $ScriptDir "SKILL.md") -Force | Out-Null
+            New-Item -ItemType SymbolicLink -Path $copilotInstructions -Target (Join-Path $ScriptDir "SKILL.md") -Force | Out-Null
+            if (Test-Path $BooksDir) {
+                New-Item -ItemType Junction -Path $localBooksDir -Target $BooksDir -Force | Out-Null
+            }
+            $openCodeParent = Split-Path -Parent $localOpenCodeDir
+            if (-not (Test-Path $openCodeParent)) { New-Item -ItemType Directory -Path $openCodeParent -Force | Out-Null }
+            New-Item -ItemType Junction -Path $localOpenCodeDir -Target $ScriptDir -Force | Out-Null
+            Write-Success "Symlinks/Junctions criados no projeto ativo (.cursorrules, CLAUDE.md, .github, .opencode, agent-rules-books)."
+            return
+        }
+        catch {
+            Write-Warn "Falha ao criar symlink no projeto ativo. Realizando cópia física limpa..."
+        }
+    }
+
+    Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $cursorRules -Force
+    Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $claudeMd -Force
+    Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $copilotInstructions -Force
+
+    if (Test-Path $BooksDir) {
+        if (-not (Test-Path $localBooksDir)) { New-Item -ItemType Directory -Path $localBooksDir -Force | Out-Null }
+        Copy-Item -Path (Join-Path $BooksDir "*") -Destination $localBooksDir -Recurse -Force
+    }
+
+    if (-not (Test-Path $localOpenCodeDir)) { New-Item -ItemType Directory -Path $localOpenCodeDir -Force | Out-Null }
+    Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $localOpenCodeDir -Force
+    if (Test-Path $BooksDir) {
+        $opencodeBooks = Join-Path $localOpenCodeDir "agent-rules-books"
+        if (-not (Test-Path $opencodeBooks)) { New-Item -ItemType Directory -Path $opencodeBooks -Force | Out-Null }
+        Copy-Item -Path (Join-Path $BooksDir "*") -Destination $opencodeBooks -Recurse -Force
+    }
+
+    Write-Success "Cópia limpa realizada no projeto ativo (.cursorrules, CLAUDE.md, .github, .opencode, agent-rules-books)."
 }
 
 function Remove-SkillFolder($targetDir) {
@@ -230,10 +302,39 @@ function Remove-SkillFolder($targetDir) {
     }
 }
 
-function Configure-CursorRule {
+function Configure-CursorRule([bool]$asSymlink) {
+    $currentDir = (Get-Location).Path
+    $cursorRules = Join-Path $currentDir ".cursorrules"
+    $localBooksDir = Join-Path $currentDir "agent-rules-books"
+
+    if ($asSymlink) {
+        try {
+            New-Item -ItemType SymbolicLink -Path $cursorRules -Target (Join-Path $ScriptDir "SKILL.md") -Force | Out-Null
+            if (Test-Path $BooksDir) {
+                New-Item -ItemType Junction -Path $localBooksDir -Target $BooksDir -Force | Out-Null
+            }
+            Write-Success "Regra Cursor configurada via symlink (.cursorrules -> SKILL.md)"
+        }
+        catch {
+            Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $cursorRules -Force
+            if (Test-Path $BooksDir) {
+                if (-not (Test-Path $localBooksDir)) { New-Item -ItemType Directory -Path $localBooksDir -Force | Out-Null }
+                Copy-Item -Path (Join-Path $BooksDir "*") -Destination $localBooksDir -Recurse -Force
+            }
+            Write-Success "Regra Cursor e agent-rules-books copiados (.cursorrules)"
+        }
+    } else {
+        Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $cursorRules -Force
+        if (Test-Path $BooksDir) {
+            if (-not (Test-Path $localBooksDir)) { New-Item -ItemType Directory -Path $localBooksDir -Force | Out-Null }
+            Copy-Item -Path (Join-Path $BooksDir "*") -Destination $localBooksDir -Recurse -Force
+        }
+        Write-Success "Regra Cursor e agent-rules-books copiados (.cursorrules)"
+    }
+
     $userProfile = [System.Environment]::GetFolderPath('UserProfile')
     $globalDir = Join-Path $userProfile ".cursor\rules"
-    $localDir = Join-Path (Get-Location) ".cursor\rules"
+    $localDir = Join-Path $currentDir ".cursor\rules"
 
     if (Test-Path $globalDir) {
         $destFile = Join-Path $globalDir "brutal-crafter.mdc"
@@ -256,7 +357,7 @@ Esta regra ativa as diretrizes e comandos do brutal-crafter:
 - Flags: `-s` (Quick/ADHD), `-d` (Deep Dive), `-e` (Execute hands-on), `-j` (Jira MCP sync)
 - Princípios: Good Taste, Never Break Userspace, Módulos Profundos, Zero Over-engineering.
 
-Consulte a documentação completa da skill em SKILL.md.
+Consulte as instruções completas em SKILL.md e agent-rules-books/.
 "@
     Set-Content -Path $destFile -Value $content -Encoding UTF8
     Write-Success "Regra Cursor gerada: $destFile"
@@ -278,23 +379,33 @@ function Configure-WindsurfRule {
     }
 }
 
-function Configure-CopilotRule {
-    $githubDir = Join-Path (Get-Location) ".github"
+function Configure-CopilotRule([bool]$asSymlink) {
+    $currentDir = (Get-Location).Path
+    $githubDir = Join-Path $currentDir ".github"
     if (-not (Test-Path $githubDir)) { New-Item -ItemType Directory -Path $githubDir -Force | Out-Null }
     $destFile = Join-Path $githubDir "copilot-instructions.md"
-    $snippet = @"
+    $localBooksDir = Join-Path $currentDir "agent-rules-books"
 
-## brutal-crafter - Princípios de Engenharia
-- Respostas diretas à ação (ADHD mode: passos numerados, <= 5 itens por lista, zero preâmbulos).
-- Comandos: /bc-x (auditoria), /bc-plan (planejamento), /bc-task (tarefas), /bc-craft (plano + tarefas), /bc-dev (execução).
-- Priorize robustez de produção: timeouts, resiliência, idempotência e módulos profundos.
-"@
-    if ((Test-Path $destFile) -and ((Get-Content $destFile -Raw) -match "brutal-crafter")) {
-        Write-Info "Instruções do Copilot já contêm brutal-crafter em $destFile"
-    } else {
-        Add-Content -Path $destFile -Value $snippet -Encoding UTF8
-        Write-Success "Instruções do Copilot adicionadas a: $destFile"
+    if ($asSymlink) {
+        try {
+            New-Item -ItemType SymbolicLink -Path $destFile -Target (Join-Path $ScriptDir "SKILL.md") -Force | Out-Null
+            if (Test-Path $BooksDir) {
+                New-Item -ItemType Junction -Path $localBooksDir -Target $BooksDir -Force | Out-Null
+            }
+            Write-Success "Instruções do Copilot configuradas via symlink ($destFile)"
+            return
+        }
+        catch {
+            Write-Warn "Falha ao criar symlink para Copilot. Realizando cópia física..."
+        }
     }
+
+    Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $destFile -Force
+    if (Test-Path $BooksDir) {
+        if (-not (Test-Path $localBooksDir)) { New-Item -ItemType Directory -Path $localBooksDir -Force | Out-Null }
+        Copy-Item -Path (Join-Path $BooksDir "*") -Destination $localBooksDir -Recurse -Force
+    }
+    Write-Success "Instruções Copilot e agent-rules-books copiados ($destFile)"
 }
 
 function Configure-ClineRule {
@@ -352,23 +463,16 @@ Comandos suportados: /bc-x, /bc-plan, /bc-task, /bc-craft, /bc-dev (flags -s, -d
     Write-Success "Prompt Continue.dev gerado: $destFile"
 }
 
-$UserProfile = [System.Environment]::GetFolderPath('UserProfile')
-$GeminiSkillsDir = Join-Path $UserProfile ".gemini\skills\$SkillName"
-$AntigravitySkillsDir = Join-Path $UserProfile ".gemini\antigravity-cli\skills\$SkillName"
-$ClaudeSkillsDir = Join-Path $UserProfile ".claude\skills\$SkillName"
-$OpenCodeConfigDir = Join-Path $UserProfile ".config\opencode\skills\$SkillName"
-$OpenCodeHomeDir = Join-Path $UserProfile ".opencode\skills\$SkillName"
-$CodexSkillsDir = Join-Path $UserProfile ".codex\skills\$SkillName"
+# Auto-detecção se nenhum alvo foi informado
+$userProfile = [System.Environment]::GetFolderPath('UserProfile')
+if (-not $All -and -not $Gemini -and -not $Claude -and -not $OpenCode -and -not $Codex -and -not $Project -and -not $Cursor -and -not $Windsurf -and -not $Copilot -and -not $Cline -and -not $Aider -and -not $Continue -and ($Target -eq "")) {
+    if ((Test-Path (Join-Path $userProfile ".antigravity")) -or (Test-Path (Join-Path $userProfile ".gemini"))) { $Gemini = $true }
+    if (Test-Path (Join-Path $userProfile ".claude")) { $Claude = $true }
+    if ((Test-Path (Join-Path $userProfile ".config\opencode")) -or (Test-Path (Join-Path $userProfile ".opencode"))) { $OpenCode = $true }
+    if (Test-Path (Join-Path $userProfile ".codex")) { $Codex = $true }
 
-# Auto-detecção inteligente se nada for passado
-if (-not ($All -or $Gemini -or $Antigravity -or $Claude -or $OpenCode -or $Codex -or $Cursor -or $Windsurf -or $Copilot -or $Cline -or $Roo -or $Aider -or $Continue -or $Target)) {
-    if (Test-Path (Join-Path $UserProfile ".gemini")) { $Gemini = $true }
-    if (Test-Path (Join-Path $UserProfile ".claude")) { $Claude = $true }
-    if ((Test-Path (Join-Path $UserProfile ".config\opencode")) -or (Test-Path (Join-Path $UserProfile ".opencode"))) { $OpenCode = $true }
-    if (Test-Path (Join-Path $UserProfile ".codex")) { $Codex = $true }
-
-    # Fallback padrão se nada for detectado
-    if (-not ($Gemini -or $Claude -or $OpenCode)) {
+    # Fallback se nada for detectado
+    if (-not $Gemini -and -not $Claude -and -not $OpenCode) {
         $Gemini = $true
         $Claude = $true
         $OpenCode = $true
@@ -380,6 +484,7 @@ if ($All) {
     $Claude = $true
     $OpenCode = $true
     $Codex = $true
+    $Project = $true
     $Cursor = $true
     $Windsurf = $true
     $Copilot = $true
@@ -389,93 +494,113 @@ if ($All) {
 }
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host " brutal-crafter - Instalador Universal Windows" -ForegroundColor Cyan
+Write-Host " 🧠 brutal-crafter - Instalador Universal Windows (PowerShell)" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 # Desinstalação
 if ($Uninstall) {
     Write-Warn "Iniciando desinstalação do brutal-crafter..."
-    if ($Gemini -or $Antigravity) {
-        Remove-SkillFolder $GeminiSkillsDir
-        Remove-SkillFolder $AntigravitySkillsDir
+    if ($Gemini) {
+        Remove-SkillFolder (Join-Path $userProfile ".antigravity\skills\$SkillName")
+        Remove-SkillFolder (Join-Path $userProfile ".gemini\skills\$SkillName")
+        Remove-SkillFolder (Join-Path $userProfile ".gemini\antigravity-cli\skills\$SkillName")
     }
     if ($Claude) {
-        Remove-SkillFolder $ClaudeSkillsDir
+        Remove-SkillFolder (Join-Path $userProfile ".claude\skills\$SkillName")
     }
     if ($OpenCode) {
-        Remove-SkillFolder $OpenCodeConfigDir
-        Remove-SkillFolder $OpenCodeHomeDir
+        Remove-SkillFolder (Join-Path $userProfile ".config\opencode\skills\$SkillName")
+        Remove-SkillFolder (Join-Path $userProfile ".opencode\skills\$SkillName")
     }
     if ($Codex) {
-        Remove-SkillFolder $CodexSkillsDir
+        Remove-SkillFolder (Join-Path $userProfile ".codex\skills\$SkillName")
     }
-    if ($Target) {
+    if ($Target -ne "") {
         Remove-SkillFolder $Target
     }
     Write-Success "Desinstalação concluída."
     exit 0
 }
 
-# Instalação
-if ($Gemini -or $Antigravity) {
+$deployMode = if ($Symlink) { "Symlink / Junction (Desenvolvimento)" } else { "Cópia Limpa (2 itens essenciais)" }
+Write-Info "Modo de deploy: $deployMode"
+
+# 1. Antigravity & Gemini CLI
+if ($Gemini) {
     Write-Info "Instalando para Google Antigravity & Gemini CLI..."
-    Deploy-SkillFolder $GeminiSkillsDir $Symlink
-    Deploy-SkillFolder $AntigravitySkillsDir $Symlink
+    Deploy-SkillFolder (Join-Path $userProfile ".antigravity\skills\$SkillName") $Symlink
+    Deploy-SkillFolder (Join-Path $userProfile ".gemini\skills\$SkillName") $Symlink
+    Deploy-SkillFolder (Join-Path $userProfile ".gemini\antigravity-cli\skills\$SkillName") $Symlink
 }
 
+# 2. Claude Code
 if ($Claude) {
     Write-Info "Instalando para Claude Code..."
-    Deploy-SkillFolder $ClaudeSkillsDir $Symlink
+    Deploy-SkillFolder (Join-Path $userProfile ".claude\skills\$SkillName") $Symlink
 }
 
+# 3. OpenCode
 if ($OpenCode) {
     Write-Info "Instalando para OpenCode..."
-    Deploy-SkillFolder $OpenCodeConfigDir $Symlink
-    if (Test-Path (Join-Path $UserProfile ".opencode")) {
-        Deploy-SkillFolder $OpenCodeHomeDir $Symlink
+    Deploy-SkillFolder (Join-Path $userProfile ".config\opencode\skills\$SkillName") $Symlink
+    if (Test-Path (Join-Path $userProfile ".opencode")) {
+        Deploy-SkillFolder (Join-Path $userProfile ".opencode\skills\$SkillName") $Symlink
     }
 }
 
+# 4. OpenAI Codex / OpenDevin
 if ($Codex) {
     Write-Info "Instalando para OpenAI Codex / OpenDevin..."
-    Deploy-SkillFolder $CodexSkillsDir $Symlink
+    Deploy-SkillFolder (Join-Path $userProfile ".codex\skills\$SkillName") $Symlink
 }
 
+# 5. Projeto Ativo (Local)
+if ($Project) {
+    Deploy-ProjectLocal $Symlink
+}
+
+# 6. Cursor
 if ($Cursor) {
-    Write-Info "Configurando regras para Cursor IDE..."
-    Configure-CursorRule
+    Write-Info "Configurando regras para Cursor AI..."
+    Configure-CursorRule $Symlink
 }
 
+# 7. Windsurf
 if ($Windsurf) {
     Write-Info "Configurando regras para Windsurf..."
     Configure-WindsurfRule
 }
 
+# 8. GitHub Copilot
 if ($Copilot) {
     Write-Info "Configurando instruções para GitHub Copilot..."
-    Configure-CopilotRule
+    Configure-CopilotRule $Symlink
 }
 
-if ($Cline -or $Roo) {
+# 9. Cline / Roo Code
+if ($Cline) {
     Write-Info "Configurando regras para Cline / Roo Code..."
     Configure-ClineRule
 }
 
+# 10. Aider
 if ($Aider) {
     Write-Info "Configurando diretrizes para Aider..."
     Configure-AiderRule
 }
 
+# 11. Continue.dev
 if ($Continue) {
     Write-Info "Configurando prompt para Continue.dev..."
     Configure-ContinueRule
 }
 
-if ($Target) {
-    Write-Info "Instalando em diretório customizado: $Target..."
+# 12. Custom Target
+if ($Target -ne "") {
+    Write-Info "Instalando no diretório customizado: $Target..."
     Deploy-SkillFolder $Target $Symlink
 }
 
 Write-Host "==========================================================" -ForegroundColor Green
-Write-Success "brutal-crafter instalado com sucesso no Windows!"
+Write-Success "Pronto! brutal-crafter instalado com sucesso."
 Write-Info "Comandos disponíveis no seu agente: /bc-x, /bc-plan, /bc-task, /bc-craft, /bc-dev"

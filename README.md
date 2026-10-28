@@ -1,11 +1,12 @@
-# 🧠 brutal-crafter v2.3.0
+# 🧠 brutal-crafter
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Modo-Anti--Enrola%C3%A7%C3%A3o-red.svg?style=for-the-badge" alt="Anti-Enrolação">
-  <img src="https://img.shields.io/badge/Foco-ADHD%20Ready-brightgreen.svg?style=for-the-badge" alt="ADHD Ready">
-  <img src="https://img.shields.io/badge/Jira-MCP%20Sync-blue.svg?style=for-the-badge" alt="Jira Sync">
-  <img src="https://img.shields.io/badge/Execu%C3%A7%C3%A3o-Hands--on%20(-e)-purple.svg?style=for-the-badge" alt="Hands-on">
-  <img src="https://img.shields.io/badge/Over--Engineering-Zero%20Toler%C3%A2ncia-orange.svg?style=for-the-badge" alt="Zero Over-Engineering">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/Licen%C3%A7a-Apache%202.0-blue.svg?style=flat-square" alt="Licença Apache 2.0"></a>
+  <img src="https://img.shields.io/badge/PRs-Bem--vindas-brightgreen.svg?style=flat-square" alt="Pull Requests Bem-vindas">
+  <img src="https://img.shields.io/badge/Over--Engineering-Zero%20Toler%C3%A2ncia-red.svg?style=flat-square" alt="Zero Tolerância a Over-Engineering">
+  <img src="https://img.shields.io/badge/Foco-ADHD%20Ready-brightgreen.svg?style=flat-square" alt="ADHD Ready">
+  <img src="https://img.shields.io/badge/Jira-MCP%20Sync-blue.svg?style=flat-square" alt="Jira Sync">
+  <img src="https://img.shields.io/badge/Multi--Agente-Cursor%20%7C%20Antigravity%20%7C%20Gemini%20%7C%20Claude%20%7C%20Copilot%20%7C%20OpenCode%20%7C%20Codex-purple.svg?style=flat-square" alt="Compatível com Cursor, Antigravity, Gemini, Claude, Copilot, OpenCode e Codex">
 </p>
 
 <p align="center">
@@ -14,312 +15,539 @@
 
 ---
 
-## 🎯 Por Que Esta Skill Existe?
+## 📑 Sumário
 
-Sabe quando você pede pra IA uma sugestão de arquitetura simples e ela te devolve:
-> *"Considere usar Event Sourcing distribuído com CQRS, Kafka com 12 partições e um cluster Kubernetes de 8 nós para sincronizar a lista de compras da sua avó"?*
-
-Ou quando você pede instruções de código e ela cospe 8 páginas de prosa fofa com *"Espero que esteja bem! Vamos refletir sobre este desafio emocionante..."*, e esquece de fechar a conexão do banco de dados?
-
-**O `brutal-crafter` veio para acabar com isso.**
-
-Ele une:
-1. **O estilo anti-procrastinação do ADHD:** Ação imediata na primeira linha, passos numerados, listas com no máximo 5 itens e zero preâmbulos vazios.
-2. **A sinceridade ácida do desenvolvedor sênior cascudo (`brutal-code-review`):** Foco no "Good Taste" (eliminar casos especiais na modelagem) e na regra de ferro "Never Break Userspace".
-3. **A precisão cirúrgica de arquitetura (`skill-architect`):** Bounded Contexts pragmáticos, tracer bullets e critérios de aceite EARS (`WHEN`/`WHILE`/`IF...THEN`).
-4. **As regras de ferro dos livros clássicos (`agent-rules-books/`):** Prevenção de vazamentos de recursos (*Release It!*), modelos de concorrência e idempotência (*DDIA*), modularidade profunda (*APOSD*) e quebra de dependências (*Working Effectively with Legacy Code*).
-5. **Persistência física, execução hands-on e integração Jira:** Salvamento automático de tasks em `.docs/brutal-crafter/` com checklist `- [ ]` / `- [x]`, execução via flag `-e` e sincronização resiliente no Jira via MCP.
-
----
-
-## 📖 Glossário de Letras e Flags
-
-- **Prefixo `bc-` (Battle-Crafted / Brutal Crafter):** Comandos e auditorias testadas no fogo da produção com base nos livros clássicos *(aliases transparentes `/bt-` mantidos)*.
-- **Flag `-s` (Short / Simple / Sintético):** Modo rápido anti-procrastinação. Bullet points objetivos, leitura em menos de 1 minuto e foco imediato na ação.
-- **Flag `-d` (Deep / Detailed):** Modo mergulho profundo (*Deep Dive*). Contratos formais, diagramas conceituais, modelagem de dados e matriz exaustiva de riscos.
-- **Flag `-e` (Execute / Hands-on):** Execução prática de código, migrations idempotentes com rollback e testes automatizados, marcando tarefas concluídas com `- [x]`.
-- **Flag `-j` (Jira Integration):** Dispara a criação e sincronização resiliente das tarefas no Jira via MCP utilizando o arquivo gerado em disco.
-- **Flag `--status`:** Exibe painel compacto do status das tarefas em `.docs/brutal-crafter/`.
-- **Sintaxe `EARS` (Easy Approach to Requirements Syntax):** Critérios de aceite padronizados sem ambiguidade (`WHEN [evento]`, `WHILE [estado]`, `IF [erro] THEN [recuperação]`).
+- [Visão Geral](#visao-geral)
+- [Como Executar e Comandos Oficiais](#como-executar)
+  - [Fluxos de Execução: Direto vs. Modular](#fluxos-execucao)
+  - [Tabela de Comandos & Exemplos](#tabela-comandos)
+  - [Gestão Ativa de Ritmo (`-s` vs `-d`)](#gestao-ritmo)
+  - [Próximo Passo Obrigatório (Call to Action)](#call-to-action)
+- [Filosofia Central: Rigor Técnico + Simplicidade](#filosofia)
+- [Instalação e Configuração Multiagente](#instalacao)
+  - [🚀 Antigravity (Google)](#antigravity)
+  - [♊ Gemini CLI & Code Assist](#gemini)
+  - [🟢 Cursor AI / Windsurf](#cursor)
+  - [🟠 Claude Code](#claude)
+  - [🔵 GitHub Copilot](#copilot)
+  - [⚡ OpenCode](#opencode)
+  - [🟣 OpenAI Codex / OpenDevin](#codex)
+  - [🤖 Scripts Automatizados (`install.sh` / `install.ps1`)](#scripts-instalacao)
+- [Base Teórica Fundamentada (`agent-rules-books`)](#base-teorica)
+- [Diretrizes Especializadas por Stack Técnica](#diretrizes-por-stack)
+- [Arquitetura de Tarefas e Persistência em 3 Níveis](#arquitetura-tarefas)
+- [Formato do Output de Planejamento e Execução](#formato-output)
+- [Segurança, LGPD & Licença](#seguranca-licenca)
 
 ---
 
-## ⚡ Gestão e Sugestão Ativa de Modos (`-s` vs `-d`)
+<a id="visao-geral"></a>
+## 📌 Visão Geral
 
-A skill facilita a escolha de velocidade sem travar você:
+O **`brutal-crafter`** é uma Skill universal e agnóstica para assistentes e CLIs de IA (**Antigravity**, **Cursor**, **Gemini CLI**, **Claude Code**, **OpenCode**, **GitHub Copilot**, **Windsurf**, **Codex**).
 
-1. **Quando o comando vier sozinho (ex: apenas `/bc-plan` ou `/bc-task`):**  
-   O agente interrompe e exibe o seletor objetivo de 2 linhas:
-   > 🎯 **Qual ritmo você precisa agora?**  
-   > - `1` ou `-s` (⚡ Quick): Direto ao ponto, 4 pilares em 30s.  
-   > - `2` ou `-d` (🔬 Deep): Minúcias técnicas, contratos e diagramas.  
-   >  
-   > *Responda com o número/flag e o que deseja fazer.*
+A maioria das IAs quando questionada sobre arquitetura ou código sofre de dois extremos: ou gera elogios genéricos e páginas de prosa vazia, ou inventa dezenas de camadas desnecessárias (*"vamos criar um cluster Kubernetes com Event Sourcing e Kafka para um CRUD simples"*), esquecendo detalhes críticos como fechamento de conexões, timeouts e idempotência.
 
-2. **Quando o comando vier com a demanda mas sem flag (ex: `/bc-plan criar webhook`):**  
-   - Assume **`-s` (Quick)** por padrão para não gerar atrito.
-   - Adiciona no topo da resposta a dica de expansão rápida:  
-     `[MODO: ⚡ QUICK | 💡 Quer ver em detalhes? Responda apenas "-d"]`
+O **brutal-crafter** acaba com o teatro corporativo aplicando engenharia de sistemas de missão crítica aliada ao estilo de ação imediata:
 
-3. **Comutação instantânea:**  
-   Se após uma resposta rápida você responder apenas `-d`, o agente expande aquela mesma análise imediatamente para o modo Deep, sem exigir que você reescreva nada.
+* 🟢 **Ação Imediata & ADHD Ready:** Comandos diretos na primeira linha, passos numerados, listas com no máximo 5 itens e zero preâmbulos fofos.
+* ⚔️ **Guerra ao Over-Engineering:** Princípio do *Good Taste* (eliminar casos especiais na modelagem) e a regra de ouro *Never Break Userspace*.
+* 🏛️ **Os 4 Pilares Inegociáveis:** Todo planejamento arquitetural decompõe **Problema Real**, **Solução Recomendada**, **Riscos e Armadilhas** e **Melhorias e Evolução**.
+* 📚 **Fundamentação Clássica:** Críticas e validações respaldadas pelas obras canônicas da engenharia de software contidas em `agent-rules-books/`.
+* 📝 **Persistência Física & Jira MCP:** Salva automaticamente o planejamento em `.docs/brutal-crafter/tasks_*.md` com formato checklist (`- [ ]` / `- [x]`), execução hands-on (`-e`) e sincronização resiliente com Jira via MCP (`-j`).
 
 ---
 
-## 🛠️ Comandos Oficiais da Skill
+<a id="como-executar"></a>
+## ⚡ Como Executar e Comandos Oficiais
+
+<a id="fluxos-execucao"></a>
+### 🔄 Fluxos de Execução: Direto vs. Modular
 
 ```text
-Fluxo Direto (Recomendado - 1 Passo):
+Fluxo Direto (Recomendado - Alta Velocidade):
 /bc-craft [-s | -d] [-j] (Planejamento 4 Pilares + Tarefas em Disco + Jira) ──► /bc-dev -e (Código Seguro & Testes)
 
 Fluxo Modular / Tradicional:
 /bc-x (Auditoria Codebase) ──► /bc-plan (Requisitos) ──► /bc-task (Tarefas em Disco/Jira) ──► /bc-dev (Código Seguro)
 ```
 
+---
+
+<a id="tabela-comandos"></a>
+### 🛠️ Tabela de Comandos & Exemplos
+
 | Comando | O Que Faz | Exemplo de Uso |
 | :--- | :--- | :--- |
-| **`/bc-craft [-s \| -d] [-j]`** | **Planejamento & Tarefas Unificado (NOVO):** Gera os 4 pilares de arquitetura e já salva as tarefas atômicas em `.docs/brutal-crafter/tasks_*.md` com suporte opcional a sync Jira MCP (`-j`). | `/bc-craft -s Webhook Pix`<br>`/bc-craft -d -j Gateway pagamentos`<br>*(Aliases: `/bc-pt`, `/bc-plantask`)* |
-| **`/bc-x [-s \| -d] [caminho]`** | **Auditoria de Codebase & Riscos:** Ingestão com `npx repomix` ou fallback nativo automático (`find`/`grep`), varredura de leaks, concorrência e timeouts. | `/bc-x -s`<br>`/bc-x -d src/Billing` |
-| **`/bc-plan [-s \| -d]`** | **Requisitos & Solução:** Desarma premissas falsas, elimina over-engineering e estampa data obrigatória. | `/bc-plan -s Criar checkout Pix`<br>`/bc-plan -d Gateway de pagamentos` |
+| **`/bc-craft [-s \| -d] [-j]`** | **Planejamento & Tarefas Unificado:** Gera os 4 pilares de arquitetura e já salva as tarefas atômicas em `.docs/brutal-crafter/tasks_*.md` com suporte a sync Jira MCP (`-j`). *(Aliases: `/bc-pt`, `/bc-plantask`)* | `/bc-craft -s Webhook Pix`<br>`/bc-craft -d -j Gateway pagamentos` |
+| **`/bc-x [-s \| -d] [caminho]`** | **Auditoria de Codebase & Riscos:** Ingestão com `npx repomix` ou fallback nativo automático (`find`/`grep`), varredura de leaks, concorrência, timeouts e anti-patterns. | `/bc-x -s`<br>`/bc-x -d src/Billing` |
+| **`/bc-plan [-s \| -d]`** | **Requisitos & Solução:** Desarma premissas falsas, elimina over-engineering e consolida os 4 pilares arquiteturais. | `/bc-plan -s Criar checkout Pix`<br>`/bc-plan -d Gateway de pagamentos` |
 | **`/bc-task [-s \| -d] [-j] [--status]`** | **Detalhamento Atômico & Arquivo:** Salva em `.docs/brutal-crafter/tasks_*.md` com formato checklist `- [ ]`, suporte a `--status` e sync Jira MCP. | `/bc-task -s Plano de checkout`<br>`/bc-task -d -j Plano de checkout`<br>`/bc-task --status` |
-| **`/bc-dev [-s \| -d \| -e]`** | **Diretrizes Técnicas ou Execução Hands-on:** Lê o arquivo `.docs/brutal-crafter/` mais recente. No modo `-e`, codifica, testa e marca `- [x]`. | `/bc-dev -s TASK-01`<br>`/bc-dev -e TASK-01` |
+| **`/bc-dev [-s \| -d \| -e]`** | **Diretrizes Técnicas ou Execução Hands-on:** Lê o arquivo `.docs/brutal-crafter/` mais recente. No modo `-e`, codifica, executa testes e marca `- [x]`. | `/bc-dev -s TASK-01`<br>`/bc-dev -e TASK-01` |
+
+> [!TIP]
+> **Compatibilidade Retroativa:** Todos os comandos `/bt-*` (`/bt-x`, `/bt-plan`, `/bt-task`, `/bt-dev`) são mantidos como aliases transparentes.
 
 ---
 
-## ⚡ `/bc-craft` — Planejamento e Tarefas em 1 Só Passo
+<a id="gestao-ritmo"></a>
+### ⏱️ Gestão Ativa de Ritmo (`-s` vs `-d`)
 
-Se você já sabe o que precisa construir e não quer rodar `/bc-plan` para depois rodar `/bc-task`:
-1. Execute `/bc-craft -s <sua demanda>` (ou com `-j` para sincronizar no Jira).
-2. O agente gera os 4 pilares arquiteturais, decompõe até 5 tarefas com critérios EARS e **já salva fisicamente o arquivo em `.docs/brutal-crafter/tasks_DD-MM-YYYY.md`**.
-3. Você vai direto para a implementação: `/bc-dev -e TASK-01`.
+A skill adapta a profundidade sem burocracia:
 
----
-
-## 📁 Obrigação de Arquivo e Sincronização Jira (`/bc-craft` e `/bc-task`)
-
-Ao rodar `/bc-craft` ou `/bc-task`:
-1. Cria automaticamente o diretório `.docs/brutal-crafter/` (se não existir).
-2. Salva o arquivo datado: `.docs/brutal-crafter/tasks_DD-MM-YYYY.md` com cabeçalho `# Planejamento de Tarefas - DD/MM/YYYY`.
-3. **Fidelidade Total em Checklist:** Cada tarefa é registrada no formato:
-   - `### - [ ] [TASK-XX] Título Claro`
-   - 🎯 Problema que Resolve
-   - 🧩 Detalhamento Técnico Profundo (Frameworks, tipos, versões)
-   - 🛠️ Arquivos & Alvos (Caminhos e tabelas exatas)
-   - ✅ Critério de Aceite e Testes (EARS: `WHEN`, `WHILE`, `IF...THEN`)
-   - 🔗 Dependências
-4. **Flag `-j` (Resiliente):** Sincroniza cada card individualmente no Jira. Se algum card falhar, emite aviso na resposta e mantém o markdown local preservado.
+1. **Comando isolado (ex: `/bc-plan`):** Exibe o seletor objetivo de 2 opções:
+   > 🎯 **Qual ritmo você precisa agora?**  
+   > - `1` ou `-s` (⚡ Quick): Direto ao ponto, 4 pilares em 30s.  
+   > - `2` ou `-d` (🔬 Deep): Minúcias técnicas, contratos e diagramas.
+2. **Comando com demanda sem flag (ex: `/bc-plan criar webhook`):**
+   Assume **`-s` (Quick)** por padrão e exibe dica no topo: `[MODO: ⚡ QUICK | 💡 Quer ver em detalhes? Responda apenas "-d"]`.
+3. **Comutação instantânea:** Se responder apenas `-d` na sequência, a análise é expandida instantaneamente para o modo Deep.
 
 ---
 
-## 👉 Próximo Passo Obrigatório (Call to Action)
+<a id="call-to-action"></a>
+### 👉 Próximo Passo Obrigatório (Call to Action)
 
-Toda resposta da skill termina com o próximo passo recomendado:
-- **Após `/bc-x`:** `👉 Próximo passo recomendado: /bc-craft -s [feature prioritária] ou /bc-plan -s [feature]`
-- **Após `/bc-plan`:** `👉 Próximo passo recomendado: /bc-task -s [ID ou tema do plano] (Isso gerará o arquivo detalhado em .docs/brutal-crafter/tasks_DATA.md)`
-- **Após `/bc-task` (sem `-j`):** `👉 Próximo passo recomendado: /bc-task -j (para sincronizar com o Jira) ou /bc-dev -e TASK-01 (para implementar com validação)`
-- **Após `/bc-task` (com `-j`):** `👉 Próximo passo recomendado: /bc-dev -e TASK-01 (guiado pelo arquivo validado no Jira)`
-- **Após `/bc-craft` (sem `-j`):** `👉 Próximo passo recomendado: /bc-task -j (para sincronizar com o Jira) ou /bc-dev -e TASK-01 (para implementar com validação)`
-- **Após `/bc-craft` (com `-j`):** `👉 Próximo passo recomendado: /bc-dev -e TASK-01 (guiado pelo arquivo validado no Jira)`
-- **Após `/bc-dev`:** `👉 Próximo passo recomendado: /bc-dev -e [próxima TASK] ou /bc-task --status para revisar o progresso total.`
+Toda resposta encerra com a próxima ação bounded recomendada:
+* **Após `/bc-x`:** `👉 Próximo passo recomendado: /bc-craft -s [feature] ou /bc-plan -s [feature]`
+* **Após `/bc-plan`:** `👉 Próximo passo recomendado: /bc-task -s [ID ou tema do plano]`
+* **Após `/bc-task` ou `/bc-craft` (sem `-j`):** `👉 Próximo passo recomendado: /bc-task -j (sincronizar Jira) ou /bc-dev -e TASK-01 (implementar)`
+* **Após `/bc-task` ou `/bc-craft` (com `-j`):** `👉 Próximo passo recomendado: /bc-dev -e TASK-01 (guiado pelo arquivo sincronizado no Jira)`
+* **Após `/bc-dev`:** `👉 Próximo passo recomendado: /bc-dev -e [próxima TASK] ou /bc-task --status`
 
 ---
 
-## 🏛️ Os 4 Pilares Inegociáveis (`/bc-plan` e `/bc-x`)
+<a id="filosofia"></a>
+## 🎯 Filosofia Central: Rigor Técnico + Simplicidade
+
+| Princípio | Diretriz Prática |
+| :--- | :--- |
+| **🟢 Sinceridade Sem Fofura** | Sem elogios vazios ou rodeios. Diagnóstico imediato do problema e da causa-raiz. |
+| **⚔️ Guerra ao Over-Engineering** | A solução mais elegante é a mais simples que resolve o problema sem criar 15 camadas desnecessárias. |
+| **🛡️ Never Break Userspace** | Código "teoricamente perfeito" que quebra contratos ou clientes em produção é terminantemente rejeitado. |
+| **⏱️ Zero Bikeshedding & Foco ADHD** | Ação na primeira linha, passos ordenados, no máximo 5 itens por lista e foco em resiliência, concorrência e estabilidade. |
+| **🧠 Memória & Persistência Auditável** | Tarefas físicas salvas em `.docs/brutal-crafter/` com checklists `- [ ]` / `- [x]` e rastreabilidade total. |
+| **⚡ Execução Autônoma** | Permissão total para inspecionar, criar diretórios, gerar arquivos de tarefas e executar testes sem interrupções desnecessárias. |
+
+---
+
+<a id="instalacao"></a>
+## 🛠️ Guia de Instalação e Configuração Multiagente
+
+A Skill necessita estritamente de apenas **2 itens** para funcionar:
+1. O arquivo de instruções (`SKILL.md`)
+2. A pasta com a biblioteca de regras (`agent-rules-books/`)
+
+A base bibliográfica (`agent-rules-books/`) é autossuficiente e vem embutida diretamente na árvore do repositório (não requer submódulos Git). A estratégia de **cópia limpa** garante que apenas esses 2 itens essenciais sejam transferidos para o seu assistente ou projeto, evitando arquivos desnecessários do repositório git e problemas de permissão com links simbólicos (symlinks).
+
+---
+
+<a id="antigravity"></a>
+### 🚀 Antigravity (Google)
+
+- **⚡ Instalação em 1-Comando (Sem clonar manualmente):**
+  - **Linux / macOS / WSL:**
+    ```bash
+    git clone https://github.com/antonicarlos/brutal-crafter.git /tmp/bc_temp && \
+    mkdir -p ~/.antigravity/skills/brutal-crafter && \
+    cp /tmp/bc_temp/SKILL.md ~/.antigravity/skills/brutal-crafter/ && \
+    cp -r /tmp/bc_temp/agent-rules-books ~/.antigravity/skills/brutal-crafter/ && \
+    rm -rf /tmp/bc_temp
+    ```
+  - **Windows (PowerShell):**
+    ```powershell
+    git clone https://github.com/antonicarlos/brutal-crafter.git $env:TEMP\bc_temp; `
+    New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.antigravity\skills\brutal-crafter"; `
+    Copy-Item "$env:TEMP\bc_temp\SKILL.md" -Destination "$env:USERPROFILE\.antigravity\skills\brutal-crafter\"; `
+    Copy-Item -Recurse -Force "$env:TEMP\bc_temp\agent-rules-books" -Destination "$env:USERPROFILE\.antigravity\skills\brutal-crafter\"; `
+    Remove-Item -Recurse -Force "$env:TEMP\bc_temp"
+    ```
+- **📁 Se você já clonou este repositório localmente:**
+  - **Linux / macOS:**
+    ```bash
+    mkdir -p ~/.antigravity/skills/brutal-crafter && \
+    cp SKILL.md ~/.antigravity/skills/brutal-crafter/ && \
+    cp -r agent-rules-books ~/.antigravity/skills/brutal-crafter/
+    ```
+  - **Windows (PowerShell):**
+    ```powershell
+    New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.antigravity\skills\brutal-crafter"
+    Copy-Item "SKILL.md" -Destination "$env:USERPROFILE\.antigravity\skills\brutal-crafter\"
+    Copy-Item -Recurse -Force "agent-rules-books" -Destination "$env:USERPROFILE\.antigravity\skills\brutal-crafter\"
+    ```
+- **🔗 Via Symlink (Execute dentro da pasta clonada):**
+  - **Linux / macOS:** `mkdir -p ~/.antigravity/skills && ln -sfn "$(pwd)" ~/.antigravity/skills/brutal-crafter`
+  - **Windows (PowerShell):** `New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.antigravity\skills"; New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.antigravity\skills\brutal-crafter" -Target (Get-Location)`
+
+---
+
+<a id="gemini"></a>
+### ♊ Gemini CLI & Code Assist
+
+- **⚡ Instalação em 1-Comando (Sem clonar manualmente):**
+  - **Linux / macOS / WSL:**
+    ```bash
+    git clone https://github.com/antonicarlos/brutal-crafter.git /tmp/bc_temp && \
+    mkdir -p ~/.gemini/skills/brutal-crafter && \
+    cp /tmp/bc_temp/SKILL.md ~/.gemini/skills/brutal-crafter/ && \
+    cp -r /tmp/bc_temp/agent-rules-books ~/.gemini/skills/brutal-crafter/ && \
+    rm -rf /tmp/bc_temp
+    ```
+  - **Windows (PowerShell):**
+    ```powershell
+    git clone https://github.com/antonicarlos/brutal-crafter.git $env:TEMP\bc_temp; `
+    New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.gemini\skills\brutal-crafter"; `
+    Copy-Item "$env:TEMP\bc_temp\SKILL.md" -Destination "$env:USERPROFILE\.gemini\skills\brutal-crafter\"; `
+    Copy-Item -Recurse -Force "$env:TEMP\bc_temp\agent-rules-books" -Destination "$env:USERPROFILE\.gemini\skills\brutal-crafter\"; `
+    Remove-Item -Recurse -Force "$env:TEMP\bc_temp"
+    ```
+- **📁 Se você já clonou este repositório localmente:**
+  - **Linux / macOS:**
+    ```bash
+    mkdir -p ~/.gemini/skills/brutal-crafter && \
+    cp SKILL.md ~/.gemini/skills/brutal-crafter/ && \
+    cp -r agent-rules-books ~/.gemini/skills/brutal-crafter/
+    ```
+  - **Windows (PowerShell):**
+    ```powershell
+    New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.gemini\skills\brutal-crafter"
+    Copy-Item "SKILL.md" -Destination "$env:USERPROFILE\.gemini\skills\brutal-crafter\"
+    Copy-Item -Recurse -Force "agent-rules-books" -Destination "$env:USERPROFILE\.gemini\skills\brutal-crafter\"
+    ```
+- **🔗 Via Symlink (Execute dentro da pasta clonada):**
+  - **Linux / macOS:** `mkdir -p ~/.gemini/skills && ln -sfn "$(pwd)" ~/.gemini/skills/brutal-crafter`
+  - **Windows (PowerShell):** `New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.gemini\skills"; New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.gemini\skills\brutal-crafter" -Target (Get-Location)`
+
+---
+
+<a id="cursor"></a>
+### 🟢 Cursor AI / Windsurf (No projeto ativo)
+
+- **⚡ Instalação em 1-Comando (Sem clonar manualmente):**
+  *Execute na raiz do projeto onde deseja habilitar o brutal-crafter:*
+  - **Linux / macOS / WSL:**
+    ```bash
+    git clone https://github.com/antonicarlos/brutal-crafter.git /tmp/bc_temp && \
+    cp /tmp/bc_temp/SKILL.md .cursorrules && \
+    cp -r /tmp/bc_temp/agent-rules-books ./agent-rules-books && \
+    rm -rf /tmp/bc_temp
+    ```
+  - **Windows (PowerShell):**
+    ```powershell
+    git clone https://github.com/antonicarlos/brutal-crafter.git $env:TEMP\bc_temp; `
+    Copy-Item "$env:TEMP\bc_temp\SKILL.md" -Destination ".cursorrules"; `
+    Copy-Item -Recurse -Force "$env:TEMP\bc_temp\agent-rules-books" -Destination "agent-rules-books"; `
+    Remove-Item -Recurse -Force "$env:TEMP\bc_temp"
+    ```
+- **📁 Se você já clonou este repositório localmente:**
+  - **Linux / macOS:**
+    ```bash
+    cp SKILL.md /caminho/do/seu/projeto/.cursorrules && \
+    cp -r agent-rules-books /caminho/do/seu/projeto/
+    ```
+  - **Windows (PowerShell):**
+    ```powershell
+    Copy-Item "SKILL.md" -Destination "C:\caminho\do\projeto\.cursorrules"
+    Copy-Item -Recurse -Force "agent-rules-books" -Destination "C:\caminho\do\projeto\agent-rules-books"
+    ```
+- **🔗 Via Symlink (Opcional):**
+  - **Linux / macOS:** `ln -s /caminho/para/brutal-crafter/SKILL.md .cursorrules && ln -s /caminho/para/brutal-crafter/agent-rules-books agent-rules-books`
+  - **Windows (PowerShell):** `New-Item -ItemType SymbolicLink -Path ".cursorrules" -Target "C:\caminho\para\brutal-crafter\SKILL.md"; New-Item -ItemType SymbolicLink -Path "agent-rules-books" -Target "C:\caminho\para\brutal-crafter\agent-rules-books"`
+
+---
+
+<a id="claude"></a>
+### 🟠 Claude Code (No projeto ativo ou Global)
+
+#### No Projeto Ativo (Recomendado)
+*Execute na raiz do projeto onde deseja habilitar o brutal-crafter:*
+
+- **⚡ Instalação em 1-Comando (Sem clonar manualmente):**
+  - **Linux / macOS / WSL:**
+    ```bash
+    git clone https://github.com/antonicarlos/brutal-crafter.git /tmp/bc_temp && \
+    cp /tmp/bc_temp/SKILL.md CLAUDE.md && \
+    cp -r /tmp/bc_temp/agent-rules-books ./agent-rules-books && \
+    rm -rf /tmp/bc_temp
+    ```
+  - **Windows (PowerShell):**
+    ```powershell
+    git clone https://github.com/antonicarlos/brutal-crafter.git $env:TEMP\bc_temp; `
+    Copy-Item "$env:TEMP\bc_temp\SKILL.md" -Destination "CLAUDE.md"; `
+    Copy-Item -Recurse -Force "$env:TEMP\bc_temp\agent-rules-books" -Destination "agent-rules-books"; `
+    Remove-Item -Recurse -Force "$env:TEMP\bc_temp"
+    ```
+- **📁 Se você já clonou este repositório localmente:**
+  - **Linux / macOS:**
+    ```bash
+    cp SKILL.md /caminho/do/seu/projeto/CLAUDE.md && \
+    cp -r agent-rules-books /caminho/do/seu/projeto/
+    ```
+  - **Windows (PowerShell):**
+    ```powershell
+    Copy-Item "SKILL.md" -Destination "C:\caminho\do\projeto\CLAUDE.md"
+    Copy-Item -Recurse -Force "agent-rules-books" -Destination "C:\caminho\do\projeto\agent-rules-books"
+    ```
+
+#### Global (Claude Code Skills)
+- **Linux / macOS:** `mkdir -p ~/.claude/skills/brutal-crafter && cp SKILL.md ~/.claude/skills/brutal-crafter/ && cp -r agent-rules-books ~/.claude/skills/brutal-crafter/`
+- **Windows (PowerShell):** `New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills\brutal-crafter"; Copy-Item "SKILL.md" -Destination "$env:USERPROFILE\.claude\skills\brutal-crafter\"; Copy-Item -Recurse -Force "agent-rules-books" -Destination "$env:USERPROFILE\.claude\skills\brutal-crafter\"`
+
+---
+
+<a id="copilot"></a>
+### 🔵 GitHub Copilot (No projeto ativo)
+
+- **⚡ Instalação em 1-Comando (Sem clonar manualmente):**
+  *Execute na raiz do projeto onde deseja habilitar o brutal-crafter:*
+  - **Linux / macOS / WSL:**
+    ```bash
+    git clone https://github.com/antonicarlos/brutal-crafter.git /tmp/bc_temp && \
+    mkdir -p .github && \
+    cp /tmp/bc_temp/SKILL.md .github/copilot-instructions.md && \
+    cp -r /tmp/bc_temp/agent-rules-books ./agent-rules-books && \
+    rm -rf /tmp/bc_temp
+    ```
+  - **Windows (PowerShell):**
+    ```powershell
+    git clone https://github.com/antonicarlos/brutal-crafter.git $env:TEMP\bc_temp; `
+    New-Item -ItemType Directory -Force -Path ".github"; `
+    Copy-Item "$env:TEMP\bc_temp\SKILL.md" -Destination ".github\copilot-instructions.md"; `
+    Copy-Item -Recurse -Force "$env:TEMP\bc_temp\agent-rules-books" -Destination "agent-rules-books"; `
+    Remove-Item -Recurse -Force "$env:TEMP\bc_temp"
+    ```
+- **📁 Se você já clonou este repositório localmente:**
+  - **Linux / macOS:**
+    ```bash
+    mkdir -p /caminho/do/seu/projeto/.github && \
+    cp SKILL.md /caminho/do/seu/projeto/.github/copilot-instructions.md && \
+    cp -r agent-rules-books /caminho/do/seu/projeto/
+    ```
+  - **Windows (PowerShell):**
+    ```powershell
+    New-Item -ItemType Directory -Force -Path "C:\caminho\do\projeto\.github"
+    Copy-Item "SKILL.md" -Destination "C:\caminho\do\projeto\.github\copilot-instructions.md"
+    Copy-Item -Recurse -Force "agent-rules-books" -Destination "C:\caminho\do\projeto\agent-rules-books"
+    ```
+
+---
+
+<a id="opencode"></a>
+### ⚡ OpenCode
+
+O **OpenCode** suporta Skills nativamente através do diretório `.opencode/skills/` (no projeto ativo) ou `~/.config/opencode/skills/` (global para todos os projetos do usuário).
+
+#### No Projeto Ativo (Recomendado)
+*Execute na raiz do projeto onde deseja habilitar o brutal-crafter:*
+
+- **⚡ Instalação em 1-Comando (Sem clonar manualmente):**
+  - **Linux / macOS / WSL:**
+    ```bash
+    git clone https://github.com/antonicarlos/brutal-crafter.git /tmp/bc_temp && \
+    mkdir -p .opencode/skills/brutal-crafter && \
+    cp /tmp/bc_temp/SKILL.md .opencode/skills/brutal-crafter/ && \
+    cp -r /tmp/bc_temp/agent-rules-books .opencode/skills/brutal-crafter/ && \
+    rm -rf /tmp/bc_temp
+    ```
+  - **Windows (PowerShell):**
+    ```powershell
+    git clone https://github.com/antonicarlos/brutal-crafter.git $env:TEMP\bc_temp; `
+    New-Item -ItemType Directory -Force -Path ".opencode\skills\brutal-crafter"; `
+    Copy-Item "$env:TEMP\bc_temp\SKILL.md" -Destination ".opencode\skills\brutal-crafter\"; `
+    Copy-Item -Recurse -Force "$env:TEMP\bc_temp\agent-rules-books" -Destination ".opencode\skills\brutal-crafter\"; `
+    Remove-Item -Recurse -Force "$env:TEMP\bc_temp"
+    ```
+- **📁 Se você já clonou este repositório localmente:**
+  - **Linux / macOS:**
+    ```bash
+    mkdir -p /caminho/do/seu/projeto/.opencode/skills/brutal-crafter && \
+    cp SKILL.md /caminho/do/seu/projeto/.opencode/skills/brutal-crafter/ && \
+    cp -r agent-rules-books /caminho/do/seu/projeto/
+    ```
+  - **Windows (PowerShell):**
+    ```powershell
+    New-Item -ItemType Directory -Force -Path "C:\caminho\do\projeto\.opencode\skills\brutal-crafter"
+    Copy-Item "SKILL.md" -Destination "C:\caminho\do\projeto\.opencode\skills\brutal-crafter\"
+    Copy-Item -Recurse -Force "agent-rules-books" -Destination "C:\caminho\do\projeto\agent-rules-books"
+    ```
+
+#### Global (Disponível em qualquer projeto no OpenCode)
+- **Linux / macOS / WSL:**
+  ```bash
+  mkdir -p ~/.config/opencode/skills/brutal-crafter && \
+  cp SKILL.md ~/.config/opencode/skills/brutal-crafter/ && \
+  cp -r agent-rules-books ~/.config/opencode/skills/brutal-crafter/
+  ```
+- **Windows (PowerShell):**
+  ```powershell
+  New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.config\opencode\skills\brutal-crafter"
+  Copy-Item "SKILL.md" -Destination "$env:USERPROFILE\.config\opencode\skills\brutal-crafter\"
+  Copy-Item -Recurse -Force "agent-rules-books" -Destination "$env:USERPROFILE\.config\opencode\skills\brutal-crafter\"
+  ```
+
+---
+
+<a id="codex"></a>
+### 🟣 OpenAI Codex / OpenDevin
+
+- **Linux / macOS / WSL:**
+  ```bash
+  mkdir -p ~/.codex/skills/brutal-crafter && \
+  cp SKILL.md ~/.codex/skills/brutal-crafter/ && \
+  cp -r agent-rules-books ~/.codex/skills/brutal-crafter/
+  ```
+- **Windows (PowerShell):**
+  ```powershell
+  New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.codex\skills\brutal-crafter"
+  Copy-Item "SKILL.md" -Destination "$env:USERPROFILE\.codex\skills\brutal-crafter\"
+  Copy-Item -Recurse -Force "agent-rules-books" -Destination "$env:USERPROFILE\.codex\skills\brutal-crafter\"
+  ```
+
+---
+
+<a id="scripts-instalacao"></a>
+### 🤖 Scripts Automatizados (`install.sh` / `install.ps1`)
+
+O repositório disponibiliza instaladores automatizados que realizam **auto-detecção inteligente** dos ambientes presentes e aplicam a estratégia de cópia limpa ou links simbólicos:
+
+```bash
+# Linux / macOS:
+./install.sh                    # Auto-detecta ambientes (Antigravity, Gemini, Claude, OpenCode, Codex)
+./install.sh --symlink          # Modo desenvolvimento contínuo (cria links simbólicos)
+./install.sh --all              # Instala e configura em todos os agentes suportados
+./install.sh --project          # Instala localmente no projeto ativo (.cursorrules, CLAUDE.md, etc.)
+./install.sh --uninstall --all  # Remove a skill dos diretórios de agentes
+```
+
+```powershell
+# Windows (PowerShell):
+powershell -ExecutionPolicy Bypass -File .\install.ps1               # Auto-detecta e instala
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -Symlink      # Cria links/junctions para dev
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -All          # Configura todos os agentes
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -Project      # Instala no projeto ativo
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -Uninstall    # Remove a skill
+```
+
+| Flag Linux (`./install.sh`) | Parâmetro Windows (`.\install.ps1`) | Descrição |
+| :--- | :--- | :--- |
+| `-a`, `--all` | `-All` | Configura todos os agentes suportados. |
+| `-g`, `--gemini`, `--antigravity` | `-Gemini`, `-Antigravity` | Instala no Antigravity e Gemini CLI (`~/.antigravity` e `~/.gemini`). |
+| `-c`, `--claude` | `-Claude` | Instala no Claude Code (`~/.claude/skills`). |
+| `-o`, `--opencode` | `-OpenCode` | Instala no OpenCode (`~/.config/opencode/skills`). |
+| `--codex` | `-Codex` | Instala no OpenAI Codex / OpenDevin (`~/.codex/skills`). |
+| `-p`, `--project` | `-Project` | Instala no projeto atual (`.cursorrules`, `CLAUDE.md`, `.github/copilot-instructions.md`, `agent-rules-books/`). |
+| `-s`, `--symlink` | `-Symlink` | Cria symlinks / junctions (atualizações refletem imediatamente). |
+| `--copy` | *(Padrão)* | Força a cópia física limpa dos 2 itens essenciais. |
+| `-u`, `--uninstall` | `-Uninstall` | Desinstala a skill dos ambientes selecionados. |
+| `-h`, `--help` | `-Help` | Exibe o menu detalhado de ajuda. |
+
+---
+
+<a id="base-teorica"></a>
+## 📚 Base Teórica Fundamentada (`agent-rules-books`)
+
+O agente não inventa regras da própria cabeça nem alucina opiniões pessoais. Toda análise arquitetural, apontamento de riscos e sugestão técnica cita as obras clássicas contidas em `./agent-rules-books/`:
+
+| Domínio de Engenharia | Obras e Autores de Referência | Foco de Avaliação |
+| :--- | :--- | :--- |
+| **🏛️ Arquitetura & Design** | • *A Philosophy of Software Design* (John Ousterhout)<br>• *Clean Architecture* (Robert C. Martin)<br>• *Clean Code* (Robert C. Martin)<br>• *Code Complete* (Steve McConnell)<br>• *Patterns of Enterprise Application Architecture* (Martin Fowler) | Módulos profundos, baixo acoplamento, interfaces simples e legibilidade sem excesso de camadas. |
+| **🧩 Domain-Driven Design (DDD)** | • *Domain-Driven Design* (Eric Evans)<br>• *Domain-Driven Design Distilled* (Vaughn Vernon)<br>• *Implementing Domain-Driven Design* (Vaughn Vernon) | Linguagem ubíqua, limites de contexto (Bounded Contexts) e integridade de entidades/agregados. |
+| **🔧 Refatoração & Código Legado** | • *Refactoring* (Martin Fowler)<br>• *Refactoring Guru* (Alexander Shvets)<br>• *Working Effectively with Legacy Code* (Michael Feathers) | Técnicas seguras de alteração sem quebrar contratos legados; testes de caracterização. |
+| **🌐 Sistemas Distribuídos & Resiliência** | • *Designing Data-Intensive Applications* (Martin Kleppmann)<br>• *Release It!* (Michael Nygard)<br>• *The Pragmatic Programmer* (David Thomas & Andrew Hunt) | Consistência de dados, circuit breakers, timeouts, tolerância a falhas e contenção de concorrência. |
+
+> [!NOTE]
+> **Política de Leitura Sob Demanda (`.nano.md`):**
+> Para economizar tokens e garantir respostas ultrarrápidas, a skill carrega exclusivamente os resumos cirúrgicos `.nano.md` (< 50 linhas) referentes ao problema em discussão (ex: `release-it.nano.md` para timeouts e circuit breakers; `designing-data-intensive-applications.nano.md` para idempotência). É proibido carregar todos os livros simultaneamente na memória do chat.
+
+---
+
+<a id="diretrizes-por-stack"></a>
+## 🔍 Diretrizes Especializadas por Stack Técnica
+
+O `brutal-crafter` vem configurado de fábrica com regras rigorosas para armadilhas comuns em produção:
+
+- **C# / .NET Core:** Bloqueio de LINQ em rotinas de alto throughput, deadlocks em chamadas assíncronas (`.Result`, `.Wait()`), e concatenação de strings em laços (exige `StringBuilder` ou `Span<T>`).
+- **Python:** Bloqueio de argumentos mutáveis como default (`def fn(itens=[])`), tarefas CPU-bound em threads comuns ao invés de multiprocessing, e I/O blocante em loops assíncronos.
+- **Go:** Detecção de vazamento de Goroutines (canais sem timeout ou contexts sem cancelamento), erros ignorados (`_ = err`) e alocações indevidas na heap por escape analysis induzida por ponteiros.
+- **Java / JVM (Spring Boot, Quarkus):** Prevenção de queries N+1 do JPA/Hibernate, bloqueio de chamadas reativas (`.block()`) e estouro de heap por thread pools desconfigurados.
+- **Node.js / TypeScript:** Prevenção de travamento do Event Loop com I/O síncrono, tratamento de Floating Promises e vazamento de memória por listeners soltos.
+- **Bancos de Dados & Cache (SQL, Redis):** Tolerância zero para vazamento de conexões/cursores fora de blocos `using`/`with`/`defer`, consultas `JSONB` sem índices, comandos bloqueados em produção (`KEYS *` no Redis) e inserções sem TTL.
+- **Mensageria & Queues (Kafka, RabbitMQ, SQS):** Obrigatoriedade de idempotência/deduplicação no processamento de mensagens e tratamento de mensagens tóxicas via Dead Letter Queue (DLQ).
+- **Containers, K8s & Cloud (Docker, AWS):** Identificação de caminhos locais hardcoded (`C:\temp`, `/mnt/c/`), falta de limites de CPU/RAM em manifests Kubernetes e credenciais expostas.
+- **Métricas & Observabilidade:** Alerta contra alta cardinalidade usada como Tags em time-series (InfluxDB) e excesso de logs estruturados em rotinas de alto tráfego.
+
+---
+
+<a id="arquitetura-tarefas"></a>
+## 🧠 Arquitetura de Tarefas e Persistência em 3 Níveis
+
+Para manter a integridade do projeto, rastreabilidade contínua e eliminar a necessidade de repetir instruções:
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│ Camada 1: Global Engineering Rules                              │
+│ [SKILL_DIR]/agent-rules-books/*.nano.md                         │
+│ └─ 14 livros clássicos de arquitetura, resiliência e concorrência│
+└────────────────────────────────┬────────────────────────────────┘
+                                 │
+┌────────────────────────────────┴────────────────────────────────┐
+│ Camada 2: Local Project Tasks & State                           │
+│ [REPO_ROOT]/.docs/brutal-crafter/tasks_DD-MM-YYYY.md            │
+│ └─ Checklists (- [ ] / - [x]), critérios EARS, arquivos e testes│
+└────────────────────────────────┬────────────────────────────────┘
+                                 │
+┌────────────────────────────────┴────────────────────────────────┐
+│ Camada 3: Resilient Jira Sync (MCP)                             │
+│ Jira Board / Sprints / Issues                                   │
+│ └─ Sincronização atômica card a card via MCP (flag -j)          │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> [!TIP]
+> **Fidelidade Total em Checklist (`- [ ]` ➔ `- [x]`):**
+> Ao executar uma tarefa com `/bc-dev -e TASK-XX`, o agente implementa o código, roda os testes de validação e atualiza diretamente o arquivo físico `.docs/brutal-crafter/tasks_*.md`, transformando o item em `- [x]`. O comando `/bc-task --status` exibe um painel rápido de tarefas concluídas e pendentes.
+
+> [!NOTE]
+> **Autonomia Total de Execução (Zero Interrupção):**
+> O agente possui autorização total para criar o diretório `.docs/brutal-crafter/`, atualizar os arquivos de tarefas, executar comandos de terminal de inspeção/testes e aplicar alterações mantendo tudo na working tree (*git changes*) para inspeção, sem criar commits sem ordem explícita.
+
+---
+
+<a id="formato-output"></a>
+## 🚦 Formato do Output de Planejamento e Execução
+
+### Exemplo de Planejamento (`/bc-craft -s Webhook Pix`):
 
 ```markdown
+# Planejamento Arquitetural: Webhook Pix
+
 ### 🎯 1. Problema Real
-[Qual é a dor de verdade e a causa-raiz, destruindo o sintoma superficial]
+Recebimento assíncrono de notificações de pagamento sem garantia de ordem ou entrega única. Causa-raiz: idempotência frágil e falta de contenção de concorrência.
 
 ### 💡 2. Solução Recomendada
-[A rota mais limpa, elegante e minimalista. Padrões consolidados antes de inventar moda]
+Endpoint dedicado com validação de assinatura HMAC no middleware, registro de deduplicação via Redis com TTL de 24h e despacho de evento para fila interna.
 
 ### ⚠️ 3. Riscos e Armadilhas
-[Onde o código vai quebrar: memory leaks, pool exhaustion, deadlocks, race conditions, timeouts]
+- **Replay Attacks / Duplicate Processing:** Requisições repetidas debitando ou creditando duas vezes *(Mitigação: ID de transação Pix único com trava no banco)*.
+- **Connection Leak:** Falta de liberação de conexão SQL em caso de timeout no gateway de pagamento *(Enforced via agent-rules-books/release-it/)*.
 
 ### 🚀 4. Melhorias e Evolução
-[O que fazer agora e como evitar acumular débitos técnicos]
+Adicionar circuit breaker para o provedor PSP e painel de métricas com taxa de deduplicação.
+
+---
+📁 **Tarefas salvas com sucesso em:** `.docs/brutal-crafter/tasks_28-10-2026.md`
+
+### - [ ] [TASK-01] Middleware de Validação de Assinatura HMAC
+- **Alvo:** `src/Middlewares/PixSignatureMiddleware.cs`
+- **Critério EARS:** `WHEN payload for recebido, IF assinatura HMAC for inválida THEN retornar HTTP 401 sem processar corpo.`
+
+👉 **Próximo passo recomendado:** `/bc-dev -e TASK-01`
 ```
 
 ---
 
-## 📚 Política de Leitura Sob Demanda (`agent-rules-books/`)
+<a id="seguranca-licenca"></a>
+## 🛡️ Segurança, LGPD & Licença
 
-A base de livros clássicos opera em 3 camadas de leitura eficiente:
-1. **Padrão:** Carrega somente `.nano.md` (< 50 linhas).
-2. **Especializada:**
-   - *Timeouts e Resiliência:* `release-it.nano.md`
-   - *Concorrência e Idempotência:* `designing-data-intensive-applications.nano.md` e `patterns-of-enterprise-application-architecture.nano.md`
-   - *Módulos Profundos e Complexidade:* `a-philosophy-of-software-design.nano.md`
-   - *Código Legado:* `working-effectively-with-legacy-code.nano.md`
-3. **Zero Desperdício de Tokens:** Proibido carregar todos os 14 livros simultaneamente.
-
----
-
-## 🚀 Como Instalar e Plugar no Seu Agente
-
-A skill disponibiliza instaladores automatizados para **Linux/macOS** (`install.sh`) e **Windows** (`install.ps1`), com suporte a instalação por cópia ou por **links simbólicos / junctions** (ideal para desenvolvimento ativo, onde qualquer edição no repositório reflete imediatamente no agente).
-
-### ⚡ Instalação Rápida (1 Comando)
-
-O instalador conta com **auto-detecção inteligente**: ele verifica automaticamente se você possui **Google Antigravity/Gemini**, **Claude Code**, **OpenCode** ou **Codex** instalados na sua máquina e faz o deploy diretamente nos ambientes detectados.
-
-#### 🐧 Linux / macOS:
-```bash
-cd /caminho/para/brutal-crafter
-
-# Instalação padrão inteligente (auto-detecta Antigravity, Claude, OpenCode e Codex):
-./install.sh
-
-# Modo Desenvolvimento (cria symlinks em vez de copiar arquivos):
-./install.sh --symlink
-
-# Instalar especificamente no OpenCode:
-./install.sh --opencode --symlink
-
-# Instalar em TODOS os agentes (Antigravity, Claude, OpenCode, Codex, Cursor, Windsurf, Copilot, Cline, Aider, Continue):
-./install.sh --all
-```
-
-#### 🪟 Windows (PowerShell):
-```powershell
-cd C:\caminho\para\brutal-crafter
-
-# Instalação padrão inteligente (auto-detecta Antigravity, Claude, OpenCode e Codex):
-powershell -ExecutionPolicy Bypass -File .\install.ps1
-
-# Modo Desenvolvimento (cria junctions/symlinks diretos):
-powershell -ExecutionPolicy Bypass -File .\install.ps1 -Symlink
-
-# Instalar especificamente no OpenCode:
-powershell -ExecutionPolicy Bypass -File .\install.ps1 -OpenCode -Symlink
-
-# Instalar em TODOS os agentes suportados:
-powershell -ExecutionPolicy Bypass -File .\install.ps1 -All
-```
-
----
-
-### 🤖 Configuração e Comportamento por Agente
-
-| Agente / Ferramenta | Onde a Skill Fica Instalada | Como Acionar |
-| :--- | :--- | :--- |
-| **Google Antigravity & Gemini CLI** | `~/.gemini/skills/brutal-crafter/`<br>`~/.gemini/antigravity-cli/skills/brutal-crafter/`<br>*(Win: `%USERPROFILE%\.gemini\...`)* | Comandos nativos `/bc-x`, `/bc-plan`, `/bc-task`, `/bc-dev` com suporte automático ao seletor de modo e flags (`-s`, `-d`, `-e`, `-j`). |
-| **Claude Code** | `~/.claude/skills/brutal-crafter/`<br>*(Win: `%USERPROFILE%\.claude\skills\...`)* | O agente carrega o cérebro `SKILL.md` / `CLAUDE.md` e compreende os comandos `/bc-*` e fluxo de 4 pilares. |
-| **OpenCode** | `~/.config/opencode/skills/brutal-crafter/`<br>`~/.opencode/skills/brutal-crafter/`<br>*(Win: `%USERPROFILE%\.config\opencode\...`)* | O OpenCode descobre nativamente a pasta da skill e carrega os 14 livros clássicos sob demanda em qualquer projeto. |
-| **OpenAI Codex / OpenDevin** | `~/.codex/skills/brutal-crafter/`<br>*(Win: `%USERPROFILE%\.codex\skills\...`)* | O agente carrega as instruções completas de engenharia e regras de concorrência/resiliência. |
-| **Cursor IDE** | Global: `~/.cursor/rules/brutal-crafter.mdc`<br>Local: `.cursor/rules/brutal-crafter.mdc` | O Cursor Agent / Composer aplica as regras automaticamente em todas as conversas e prompts. |
-| **Windsurf (Codeium)** | Local: `.windsurfrules`<br>Global: `~/.codeium/windsurf/memories/` | O Cascade consome as diretrizes de concorrência, ADHD mode e aversão a over-engineering. |
-| **GitHub Copilot** | Local: `.github/copilot-instructions.md` | O Copilot Chat utiliza os princípios de engenharia profunda e respostas diretas à ação. |
-| **Roo Code / Cline** | Local: `.clinerules` | Os agentes de terminal seguem a persona artesanal sênior e checklists atômicos em `.docs/brutal-crafter/`. |
-| **Aider** | Local: `CONVENTIONS.md` | O Aider incorpora as convenções de modularidade profunda, Good Taste e prevenção de quebra de userspace. |
-| **Continue.dev** | Local: `.continue/prompts/brutal-crafter.prompt` | Acione via `@brutal-crafter` ou use como system prompt no painel do Continue. |
-
----
-
-### 🛠️ Tabela de Flags dos Instaladores
-
-| Flag Linux (`./install.sh`) | Parâmetro Windows (`.\install.ps1`) | Ação |
-| :--- | :--- | :--- |
-| `-a`, `--all` | `-All` | Configura todos os agentes suportados de uma vez só. |
-| `-g`, `--gemini`, `--antigravity` | `-Gemini`, `-Antigravity` | Instala para Google Antigravity e Gemini CLI. |
-| `-c`, `--claude` | `-Claude` | Instala para Claude Code. |
-| `-o`, `--opencode` | `-OpenCode` | Instala para OpenCode (`~/.config/opencode/skills`). |
-| `--codex` | `-Codex` | Instala para OpenAI Codex / OpenDevin (`~/.codex/skills`). |
-| `--cursor` | `-Cursor` | Gera arquivo de regra `.cursor/rules/brutal-crafter.mdc`. |
-| `--windsurf` | `-Windsurf` | Adiciona regras ao arquivo `.windsurfrules`. |
-| `--copilot` | `-Copilot` | Adiciona instruções a `.github/copilot-instructions.md`. |
-| `--cline`, `--roo` | `-Cline`, `-Roo` | Adiciona regras ao arquivo `.clinerules`. |
-| `--aider` | `-Aider` | Adiciona diretrizes a `CONVENTIONS.md`. |
-| `--continue` | `-Continue` | Gera template em `.continue/prompts/brutal-crafter.prompt`. |
-| `-s`, `--symlink` | `-Symlink` | Usa symlink / junction (evita duplicar arquivos em dev). |
-| `--copy` | *(Padrão)* | Força a cópia física completa de arquivos. |
-| `-t`, `--target <caminho>` | `-Target <caminho>` | Instala em um diretório customizado de sua escolha. |
-| `-u`, `--uninstall` | `-Uninstall` | Remove a skill dos diretórios alvo. |
-| `-h`, `--help` | `-Help` | Exibe o menu de ajuda com todos os parâmetros. |
-
----
-
-### 📦 Instalação Manual (Se Preferir sem Script)
-
-<details>
-<summary><b>Clique para ver os comandos de cópia manual</b></summary>
-
-#### OpenCode:
-```bash
-# Linux/macOS:
-mkdir -p ~/.config/opencode/skills/brutal-crafter
-cp -r /caminho/para/brutal-crafter/* ~/.config/opencode/skills/brutal-crafter/
-
-# Windows:
-mkdir "$env:USERPROFILE\.config\opencode\skills\brutal-crafter" -Force
-Copy-Item -Path ".\*" -Destination "$env:USERPROFILE\.config\opencode\skills\brutal-crafter" -Recurse -Force
-```
-
-#### Google Antigravity / Gemini CLI:
-```bash
-# Linux/macOS:
-mkdir -p ~/.gemini/skills/brutal-crafter
-cp -r /caminho/para/brutal-crafter/* ~/.gemini/skills/brutal-crafter/
-
-# Windows:
-mkdir "$env:USERPROFILE\.gemini\skills\brutal-crafter" -Force
-Copy-Item -Path ".\*" -Destination "$env:USERPROFILE\.gemini\skills\brutal-crafter" -Recurse -Force
-```
-
-#### Claude Code:
-```bash
-# Linux/macOS:
-mkdir -p ~/.claude/skills/brutal-crafter
-cp -r /caminho/para/brutal-crafter/* ~/.claude/skills/brutal-crafter/
-
-# Windows:
-mkdir "$env:USERPROFILE\.claude\skills\brutal-crafter" -Force
-Copy-Item -Path ".\*" -Destination "$env:USERPROFILE\.claude\skills\brutal-crafter" -Recurse -Force
-```
-
-#### Cursor IDE:
-Crie o arquivo `.cursor/rules/brutal-crafter.mdc` contendo:
-```markdown
----
-description: brutal-crafter - Engenharia pragmática sem over-engineering
-globs: *
-alwaysApply: true
----
-Consulte as regras completas e os comandos /bc-x, /bc-plan, /bc-task, /bc-dev definidos em SKILL.md.
-```
-
-</details>
-
-# Windows:
-mkdir "$env:USERPROFILE\.gemini\skills\brutal-crafter" -Force
-Copy-Item -Path ".\*" -Destination "$env:USERPROFILE\.gemini\skills\brutal-crafter" -Recurse -Force
-```
-
-#### Claude Code:
-```bash
-# Linux/macOS:
-mkdir -p ~/.claude/skills/brutal-crafter
-cp -r /caminho/para/brutal-crafter/* ~/.claude/skills/brutal-crafter/
-
-# Windows:
-mkdir "$env:USERPROFILE\.claude\skills\brutal-crafter" -Force
-Copy-Item -Path ".\*" -Destination "$env:USERPROFILE\.claude\skills\brutal-crafter" -Recurse -Force
-```
-
-#### Cursor IDE:
-Crie o arquivo `.cursor/rules/brutal-crafter.mdc` contendo:
-```markdown
----
-description: brutal-crafter - Engenharia pragmática sem over-engineering
-globs: *
-alwaysApply: true
----
-Consulte as regras completas e os comandos /bc-x, /bc-plan, /bc-task, /bc-dev definidos em SKILL.md.
-```
-
-</details>
-
----
-
-## 📜 Licença
-Distribuído sob licença [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
+* **🔒 100% LGPD / PII Safe:** Não transmite nem armazena segredos, credenciais, dados corporativos confidenciais ou informações pessoais identificáveis.
+* **📄 Licença:** [Apache 2.0](LICENSE) — Livre para uso pessoal, em equipes e ambientes corporativos.

@@ -3,14 +3,14 @@
 # brutal-crafter - Script de Instalação Universal (Linux / macOS)
 # ==============================================================================
 # Instala e configura a skill brutal-crafter para múltiplos assistentes de IA:
-# - Google Antigravity & Gemini CLI
-# - Claude Code
-# - OpenCode (~/.config/opencode e ~/.opencode)
-# - OpenAI Codex / OpenDevin (~/.codex)
-# - Cursor IDE
-# - Windsurf (Codeium)
-# - GitHub Copilot
-# - Roo Code / Cline
+# - Google Antigravity (~/.antigravity/skills e ~/.gemini/antigravity-cli/skills)
+# - Gemini CLI & Code Assist (~/.gemini/skills)
+# - Claude Code (~/.claude/skills e local CLAUDE.md)
+# - OpenCode (~/.config/opencode/skills e local .opencode/skills)
+# - OpenAI Codex / OpenDevin (~/.codex/skills)
+# - Cursor AI / Windsurf (.cursorrules, rules/brutal-crafter.mdc, .windsurfrules)
+# - GitHub Copilot (.github/copilot-instructions.md)
+# - Roo Code / Cline (.clinerules)
 # - Aider (CONVENTIONS.md)
 # - Continue.dev (.continue/prompts)
 # ==============================================================================
@@ -39,13 +39,14 @@ show_help() {
   echo -e "${C_BOLD}Opções de Alvo (Agentes):${C_RESET}"
   echo -e "  -a, --all              Instala em todos os agentes suportados / detectados"
   echo -e "  -g, --gemini, --antigravity"
-  echo -e "                         Instala no Google Antigravity e Gemini CLI (~/.gemini e ~/.gemini/antigravity-cli)"
+  echo -e "                         Instala no Google Antigravity e Gemini CLI (~/.antigravity, ~/.gemini)"
   echo -e "  -c, --claude           Instala no Claude Code (~/.claude/skills)"
   echo -e "  -o, --opencode         Instala no OpenCode (~/.config/opencode/skills e ~/.opencode/skills)"
   echo -e "  --codex                Instala no OpenAI Codex / OpenDevin (~/.codex/skills)"
-  echo -e "  --cursor               Configura regras para Cursor IDE (~/.cursor/rules ou .cursor/rules local)"
+  echo -e "  -p, --project, --local Instala no projeto ativo (.cursorrules, CLAUDE.md, .github, .opencode, agent-rules-books)"
+  echo -e "  --cursor               Configura regras para Cursor AI (.cursorrules ou .cursor/rules)"
   echo -e "  --windsurf             Configura regras para Windsurf (.windsurfrules local)"
-  echo -e "  --copilot              Configura regras para GitHub Copilot (.github/copilot-instructions.md local)"
+  echo -e "  --copilot              Configura regras para GitHub Copilot (.github/copilot-instructions.md)"
   echo -e "  --cline, --roo         Configura regras para Cline / Roo Code (.clinerules local)"
   echo -e "  --aider                Configura diretrizes para Aider (CONVENTIONS.md local)"
   echo -e "  --continue             Configura prompt para Continue.dev (.continue/prompts local)"
@@ -53,13 +54,14 @@ show_help() {
   echo ""
   echo -e "${C_BOLD}Modos de Instalação:${C_RESET}"
   echo -e "  -s, --symlink          Cria links simbólicos (ideal para desenvolvimento contínuo da skill)"
-  echo -e "  --copy                 Copia os arquivos fisicamente (padrão quando não especificado --symlink)"
+  echo -e "  --copy                 Cópia física limpa dos 2 itens essenciais (padrão)"
   echo -e "  -u, --uninstall        Desinstala a skill dos agentes selecionados (ou de todos com --all)"
   echo -e "  -h, --help             Exibe esta ajuda"
   echo ""
   echo -e "${C_BOLD}Exemplos:${C_RESET}"
-  echo -e "  ./install.sh                     # Auto-detecta ambientes instalados e faz o deploy"
+  echo -e "  ./install.sh                     # Auto-detecta ambientes instalados e faz o deploy limpo"
   echo -e "  ./install.sh --symlink           # Instala criando symlinks (atualizações refletem na hora)"
+  echo -e "  ./install.sh --project           # Instala no projeto ativo com agent-rules-books"
   echo -e "  ./install.sh --opencode          # Instala especificamente no OpenCode"
   echo -e "  ./install.sh --gemini --claude   # Instala no Antigravity/Gemini e Claude Code"
   echo -e "  ./install.sh --all               # Configura todos os agentes suportados"
@@ -77,7 +79,7 @@ validate_source() {
   fi
 }
 
-# Instala pasta de skill (cópia ou symlink)
+# Instala pasta de skill (estratégia de cópia limpa dos 2 itens essenciais ou symlink)
 install_skill_folder() {
   local target_dir="$1"
   local use_symlink="$2"
@@ -93,18 +95,50 @@ install_skill_folder() {
     success "Symlink criado: $target_dir -> $SCRIPT_DIR"
   else
     mkdir -p "$target_dir"
-    # Copiar SKILL.md, agent-rules-books, README.md, ESTRUTURA.md, etc.
-    cp -R "$SCRIPT_DIR/SKILL.md" "$target_dir/"
-    [[ -f "$SCRIPT_DIR/README.md" ]] && cp -R "$SCRIPT_DIR/README.md" "$target_dir/"
-    [[ -f "$SCRIPT_DIR/ESTRUTURA.md" ]] && cp -R "$SCRIPT_DIR/ESTRUTURA.md" "$target_dir/"
+    # Cópia limpa dos 2 itens essenciais: SKILL.md e agent-rules-books/
+    cp "$SCRIPT_DIR/SKILL.md" "$target_dir/"
     if [[ -d "$SCRIPT_DIR/agent-rules-books" ]]; then
       mkdir -p "$target_dir/agent-rules-books"
       cp -R "$SCRIPT_DIR/agent-rules-books/." "$target_dir/agent-rules-books/"
     fi
-    # Compatibilidade com agentes que buscam CLAUDE.md ou .cursorrules
+    [[ -f "$SCRIPT_DIR/README.md" ]] && cp "$SCRIPT_DIR/README.md" "$target_dir/"
+    [[ -f "$SCRIPT_DIR/LICENSE" ]] && cp "$SCRIPT_DIR/LICENSE" "$target_dir/"
+    # Aliases de compatibilidade para agentes que buscam CLAUDE.md ou .cursorrules
     ln -sfn "SKILL.md" "$target_dir/CLAUDE.md" 2>/dev/null || cp "$target_dir/SKILL.md" "$target_dir/CLAUDE.md"
     ln -sfn "SKILL.md" "$target_dir/.cursorrules" 2>/dev/null || cp "$target_dir/SKILL.md" "$target_dir/.cursorrules"
-    success "Copiado com sucesso para: $target_dir"
+    success "Cópia limpa realizada com sucesso para: $target_dir"
+  fi
+}
+
+# Instalação no projeto ativo (no diretório atual)
+install_project_local() {
+  local use_symlink="$1"
+  local target_pwd="$(pwd)"
+
+  info "Instalando no projeto ativo ($target_pwd)..."
+  if [[ "$use_symlink" == "true" ]]; then
+    ln -sfn "$SCRIPT_DIR/SKILL.md" "$target_pwd/.cursorrules"
+    ln -sfn "$SCRIPT_DIR/SKILL.md" "$target_pwd/CLAUDE.md"
+    mkdir -p "$target_pwd/.github"
+    ln -sfn "$SCRIPT_DIR/SKILL.md" "$target_pwd/.github/copilot-instructions.md"
+    mkdir -p "$target_pwd/.opencode/skills"
+    ln -sfn "$SCRIPT_DIR" "$target_pwd/.opencode/skills/$SKILL_NAME"
+    ln -sfn "$SCRIPT_DIR/agent-rules-books" "$target_pwd/agent-rules-books"
+    success "Symlinks criados no projeto ativo (.cursorrules, CLAUDE.md, .github/copilot-instructions.md, .opencode, agent-rules-books)."
+  else
+    cp "$SCRIPT_DIR/SKILL.md" "$target_pwd/.cursorrules"
+    cp "$SCRIPT_DIR/SKILL.md" "$target_pwd/CLAUDE.md"
+    mkdir -p "$target_pwd/.github"
+    cp "$SCRIPT_DIR/SKILL.md" "$target_pwd/.github/copilot-instructions.md"
+    mkdir -p "$target_pwd/.opencode/skills/$SKILL_NAME"
+    cp "$SCRIPT_DIR/SKILL.md" "$target_pwd/.opencode/skills/$SKILL_NAME/"
+    if [[ -d "$SCRIPT_DIR/agent-rules-books" ]]; then
+      mkdir -p "$target_pwd/agent-rules-books"
+      cp -R "$SCRIPT_DIR/agent-rules-books/." "$target_pwd/agent-rules-books/"
+      mkdir -p "$target_pwd/.opencode/skills/$SKILL_NAME/agent-rules-books"
+      cp -R "$SCRIPT_DIR/agent-rules-books/." "$target_pwd/.opencode/skills/$SKILL_NAME/agent-rules-books/"
+    fi
+    success "Cópia limpa realizada no projeto ativo (.cursorrules, CLAUDE.md, .github/copilot-instructions.md, .opencode, agent-rules-books)."
   fi
 }
 
@@ -118,13 +152,30 @@ uninstall_skill_folder() {
   fi
 }
 
-# Gerar regra para Cursor (.cursor/rules/brutal-crafter.mdc ou global)
+# Gerar regra para Cursor
 install_cursor_rule() {
+  local use_symlink="$1"
+  local target_pwd="$(pwd)"
+
+  if [[ "$use_symlink" == "true" ]]; then
+    ln -sfn "$SCRIPT_DIR/SKILL.md" "$target_pwd/.cursorrules"
+    [[ -d "$SCRIPT_DIR/agent-rules-books" ]] && ln -sfn "$SCRIPT_DIR/agent-rules-books" "$target_pwd/agent-rules-books"
+    success "Regra Cursor configurada via symlink (.cursorrules -> SKILL.md)"
+  else
+    cp "$SCRIPT_DIR/SKILL.md" "$target_pwd/.cursorrules"
+    if [[ -d "$SCRIPT_DIR/agent-rules-books" ]]; then
+      mkdir -p "$target_pwd/agent-rules-books"
+      cp -R "$SCRIPT_DIR/agent-rules-books/." "$target_pwd/agent-rules-books/"
+    fi
+    success "Regra Cursor e agent-rules-books copiados (.cursorrules)"
+  fi
+
+  # Criação complementar em .cursor/rules se a pasta .cursor existir ou global
   local cursor_global_dir="$HOME/.cursor/rules"
-  local cursor_local_dir="$(pwd)/.cursor/rules"
+  local cursor_local_dir="$target_pwd/.cursor/rules"
   local target_file=""
 
-  if [[ -d "$cursor_global_dir" ]] || [[ ! -d "$(pwd)/.cursor" ]]; then
+  if [[ -d "$cursor_global_dir" ]] || [[ ! -d "$target_pwd/.cursor" ]]; then
     mkdir -p "$cursor_global_dir"
     target_file="$cursor_global_dir/brutal-crafter.mdc"
   else
@@ -146,7 +197,7 @@ Esta regra ativa as diretrizes e comandos do brutal-crafter:
 - Flags: `-s` (Quick/ADHD), `-d` (Deep Dive), `-e` (Execute hands-on), `-j` (Jira MCP sync)
 - Princípios: Good Taste, Never Break Userspace, Módulos Profundos, Zero Over-engineering.
 
-Consulte a documentação completa da skill em SKILL.md.
+Consulte as instruções completas em SKILL.md e agent-rules-books/.
 EOF
   success "Regra Cursor gerada: $target_file"
 }
@@ -169,20 +220,22 @@ EOF
 
 # Gerar instruções para GitHub Copilot (.github/copilot-instructions.md)
 install_copilot_rule() {
-  local target_dir="$(pwd)/.github"
-  local target_file="$target_dir/copilot-instructions.md"
+  local use_symlink="$1"
+  local target_pwd="$(pwd)"
+  local target_dir="$target_pwd/.github"
   mkdir -p "$target_dir"
-  if [[ -f "$target_file" ]] && grep -q "brutal-crafter" "$target_file"; then
-    info "Instruções do Copilot já contêm brutal-crafter em $target_file"
-  else
-    cat >> "$target_file" << 'EOF'
 
-## brutal-crafter - Princípios de Engenharia
-- Respostas diretas à ação (ADHD mode: passos numerados, <= 5 itens por lista, zero preâmbulos).
-- Comandos: /bc-x (auditoria), /bc-plan (planejamento), /bc-task (tarefas), /bc-craft (plano + tarefas), /bc-dev (execução).
-- Priorize robustez de produção: timeouts, resiliência, idempotência e módulos profundos.
-EOF
-    success "Instruções do Copilot adicionadas a: $target_file"
+  if [[ "$use_symlink" == "true" ]]; then
+    ln -sfn "$SCRIPT_DIR/SKILL.md" "$target_dir/copilot-instructions.md"
+    [[ -d "$SCRIPT_DIR/agent-rules-books" ]] && ln -sfn "$SCRIPT_DIR/agent-rules-books" "$target_pwd/agent-rules-books"
+    success "Instruções do Copilot configuradas via symlink (.github/copilot-instructions.md)"
+  else
+    cp "$SCRIPT_DIR/SKILL.md" "$target_dir/copilot-instructions.md"
+    if [[ -d "$SCRIPT_DIR/agent-rules-books" ]]; then
+      mkdir -p "$target_pwd/agent-rules-books"
+      cp -R "$SCRIPT_DIR/agent-rules-books/." "$target_pwd/agent-rules-books/"
+    fi
+    success "Instruções Copilot e agent-rules-books copiados (.github/copilot-instructions.md)"
   fi
 }
 
@@ -247,6 +300,7 @@ OPT_GEMINI=false
 OPT_CLAUDE=false
 OPT_OPENCODE=false
 OPT_CODEX=false
+OPT_PROJECT=false
 OPT_CURSOR=false
 OPT_WINDSURF=false
 OPT_COPILOT=false
@@ -277,6 +331,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --codex)
       OPT_CODEX=true
+      shift
+      ;;
+    -p|--project|--local)
+      OPT_PROJECT=true
       shift
       ;;
     --cursor)
@@ -332,8 +390,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Se nenhum agente alvo foi especificado, auto-detecta ambientes existentes
-if [[ "$OPT_ALL" == "false" && "$OPT_GEMINI" == "false" && "$OPT_CLAUDE" == "false" && "$OPT_OPENCODE" == "false" && "$OPT_CODEX" == "false" && "$OPT_CURSOR" == "false" && "$OPT_WINDSURF" == "false" && "$OPT_COPILOT" == "false" && "$OPT_CLINE" == "false" && "$OPT_AIDER" == "false" && "$OPT_CONTINUE" == "false" && -z "$OPT_TARGET" ]]; then
-  [[ -d "$HOME/.gemini" ]] && OPT_GEMINI=true
+if [[ "$OPT_ALL" == "false" && "$OPT_GEMINI" == "false" && "$OPT_CLAUDE" == "false" && "$OPT_OPENCODE" == "false" && "$OPT_CODEX" == "false" && "$OPT_PROJECT" == "false" && "$OPT_CURSOR" == "false" && "$OPT_WINDSURF" == "false" && "$OPT_COPILOT" == "false" && "$OPT_CLINE" == "false" && "$OPT_AIDER" == "false" && "$OPT_CONTINUE" == "false" && -z "$OPT_TARGET" ]]; then
+  ([[ -d "$HOME/.antigravity" ]] || [[ -d "$HOME/.gemini" ]]) && OPT_GEMINI=true
   [[ -d "$HOME/.claude" ]] && OPT_CLAUDE=true
   ([[ -d "$HOME/.config/opencode" ]] || [[ -d "$HOME/.opencode" ]]) && OPT_OPENCODE=true
   [[ -d "$HOME/.codex" ]] && OPT_CODEX=true
@@ -351,6 +409,7 @@ if [[ "$OPT_ALL" == "true" ]]; then
   OPT_CLAUDE=true
   OPT_OPENCODE=true
   OPT_CODEX=true
+  OPT_PROJECT=true
   OPT_CURSOR=true
   OPT_WINDSURF=true
   OPT_COPILOT=true
@@ -367,6 +426,7 @@ validate_source
 if [[ "$OPT_UNINSTALL" == "true" ]]; then
   warn "Iniciando desinstalação do brutal-crafter..."
   if [[ "$OPT_GEMINI" == "true" ]]; then
+    uninstall_skill_folder "$HOME/.antigravity/skills/$SKILL_NAME"
     uninstall_skill_folder "$HOME/.gemini/skills/$SKILL_NAME"
     uninstall_skill_folder "$HOME/.gemini/antigravity-cli/skills/$SKILL_NAME"
   fi
@@ -388,11 +448,12 @@ if [[ "$OPT_UNINSTALL" == "true" ]]; then
 fi
 
 # Execução das instalações
-info "Modo de deploy: $(if [[ "$OPT_SYMLINK" == "true" ]]; then echo "Symlink (Desenvolvimento)"; else echo "Cópia Física"; fi)"
+info "Modo de deploy: $(if [[ "$OPT_SYMLINK" == "true" ]]; then echo "Symlink (Desenvolvimento)"; else echo "Cópia Limpa (2 itens essenciais)"; fi)"
 
 # 1. Antigravity & Gemini CLI
 if [[ "$OPT_GEMINI" == "true" ]]; then
   info "Instalando para Google Antigravity & Gemini CLI..."
+  install_skill_folder "$HOME/.antigravity/skills/$SKILL_NAME" "$OPT_SYMLINK"
   install_skill_folder "$HOME/.gemini/skills/$SKILL_NAME" "$OPT_SYMLINK"
   install_skill_folder "$HOME/.gemini/antigravity-cli/skills/$SKILL_NAME" "$OPT_SYMLINK"
 fi
@@ -418,43 +479,48 @@ if [[ "$OPT_CODEX" == "true" ]]; then
   install_skill_folder "$HOME/.codex/skills/$SKILL_NAME" "$OPT_SYMLINK"
 fi
 
-# 5. Cursor
-if [[ "$OPT_CURSOR" == "true" ]]; then
-  info "Configurando regras para Cursor IDE..."
-  install_cursor_rule
+# 5. Projeto Ativo (Local)
+if [[ "$OPT_PROJECT" == "true" ]]; then
+  install_project_local "$OPT_SYMLINK"
 fi
 
-# 6. Windsurf
+# 6. Cursor
+if [[ "$OPT_CURSOR" == "true" ]]; then
+  info "Configurando regras para Cursor AI..."
+  install_cursor_rule "$OPT_SYMLINK"
+fi
+
+# 7. Windsurf
 if [[ "$OPT_WINDSURF" == "true" ]]; then
   info "Configurando regras para Windsurf..."
   install_windsurf_rule
 fi
 
-# 7. GitHub Copilot
+# 8. GitHub Copilot
 if [[ "$OPT_COPILOT" == "true" ]]; then
   info "Configurando instruções para GitHub Copilot..."
-  install_copilot_rule
+  install_copilot_rule "$OPT_SYMLINK"
 fi
 
-# 8. Cline / Roo Code
+# 9. Cline / Roo Code
 if [[ "$OPT_CLINE" == "true" ]]; then
   info "Configurando regras para Cline / Roo Code..."
   install_cline_rule
 fi
 
-# 9. Aider
+# 10. Aider
 if [[ "$OPT_AIDER" == "true" ]]; then
   info "Configurando diretrizes para Aider..."
   install_aider_rule
 fi
 
-# 10. Continue.dev
+# 11. Continue.dev
 if [[ "$OPT_CONTINUE" == "true" ]]; then
   info "Configurando prompt para Continue.dev..."
   install_continue_rule
 fi
 
-# 11. Custom Target
+# 12. Custom Target
 if [[ -n "$OPT_TARGET" ]]; then
   info "Instalando no diretório customizado: $OPT_TARGET..."
   install_skill_folder "$OPT_TARGET" "$OPT_SYMLINK"
