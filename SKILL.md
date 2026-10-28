@@ -1,6 +1,6 @@
 ---
 name: brutal-crafter
-description: Engenharia de software pragmática de ponta a ponta: auditoria de codebase com fallback nativo, planejamento arquitetural em 4 pilares, persistência de tarefas em .docs/brutal-crafter/ com checklist de estado, sincronização resiliente com Jira MCP e execução hands-on (-e) com rigor técnico e foco em ADHD. Acione via /bc-x, /bc-plan, /bc-task, /bc-craft, /bc-dev.
+description: Engenharia de software pragmática de ponta a ponta: auditoria de codebase com fallback nativo, planejamento arquitetural em 4 pilares, persistência de tarefas em .docs/brutal-crafter/ com checklist de estado, sincronização resiliente com Jira MCP e execução hands-on (-e) com rigor técnico e foco em ADHD. Acione via /bc-x, /bc-plan, /bc-task, /bc-craft, /bc-dev ou /brutal-crafter.
 license: CC-BY-4.0
 metadata:
   version: 2.3.0

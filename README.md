@@ -19,6 +19,7 @@
 
 - [Visão Geral](#visao-geral)
 - [Como Executar e Comandos Oficiais](#como-executar)
+  - [Diferença entre /brutal-crafter e os Comandos /bc-*](#diferenca-comandos)
   - [Fluxos de Execução: Direto vs. Modular](#fluxos-execucao)
   - [Tabela de Comandos & Exemplos](#tabela-comandos)
   - [Gestão Ativa de Ritmo (`-s` vs `-d`)](#gestao-ritmo)
@@ -32,7 +33,7 @@
   - [🔵 GitHub Copilot](#copilot)
   - [⚡ OpenCode](#opencode)
   - [🟣 OpenAI Codex / OpenDevin](#codex)
-  - [🤖 Scripts Automatizados (`install.sh` / `install.ps1`)](#scripts-instalacao)
+  - [🤖 Scripts Automatizados (`scripts/install.sh` / `scripts/install.ps1`)](#scripts-instalacao)
 - [Base Teórica Fundamentada (`agent-rules-books`)](#base-teorica)
 - [Diretrizes Especializadas por Stack Técnica](#diretrizes-por-stack)
 - [Arquitetura de Tarefas e Persistência em 3 Níveis](#arquitetura-tarefas)
@@ -61,6 +62,22 @@ O **brutal-crafter** acaba com o teatro corporativo aplicando engenharia de sist
 <a id="como-executar"></a>
 ## ⚡ Como Executar e Comandos Oficiais
 
+<a id="diferenca-comandos"></a>
+### 🧭 Qual a Diferença do `/brutal-crafter` para os Comandos `/bc-*`?
+
+O ecossistema é desenhado para cobrir tanto conversas livres de alto nível quanto execuções táticas cirúrgicas:
+
+| Comando | Escopo e Função Principal | Quando Usar |
+| :--- | :--- | :--- |
+| **`/brutal-crafter`** | **Guarda-chuva & Orquestrador Geral:** Ativa a persona sênior completa (ADHD, Good Taste, Never Break Userspace, os 14 livros) e interpreta qualquer demanda livre, orientando você ou disparando a etapa certa automaticamente. | Para discussões arquiteturais abertas, dúvidas conceituais de design ou quando não souber por qual etapa começar. |
+| **`/bc-craft`** | **Atalho em 1 Passo (All-in-One):** Gera os 4 pilares + decompõe tarefas em disco (`.docs/brutal-crafter/`) + sincroniza no Jira (`-j`). | Quando já sabe o que precisa construir e quer o plano e as tarefas geradas de imediato sem fricção. |
+| **`/bc-x`** | **Auditoria de Codebase:** Varredura técnica profunda no código existente caçando leaks de recursos, concorrência perigosa, timeouts e anti-patterns. | Antes de refatorar código legado ou ao ingressar em um repositório desconhecido. |
+| **`/bc-plan`** | **Planejamento Conceitual Puro:** Desarma premissas falsas e estrutura os 4 pilares arquiteturais sem gerar arquivos de tarefas ainda. | Quando a demanda técnica ainda é vaga e necessita de alinhamento prévio antes de criar tarefas. |
+| **`/bc-task`** | **Detalhamento e Persistência Física:** Quebra o planejamento em tarefas atômicas sequenciais em disco com checklist `- [ ]` e sincroniza no Jira via MCP (`-j`). | Para formalizar o backlog de desenvolvimento em arquivo e sincronizar o board. |
+| **`/bc-dev`** | **Diretrizes e Execução Hands-on:** Lê o arquivo em disco. No modo `-e`, codifica autonomamente, roda os testes do projeto e fecha o checklist (`- [x]`). | Para implementar cada tarefa com validação real e sem quebrar contratos de produção. |
+
+---
+
 <a id="fluxos-execucao"></a>
 ### 🔄 Fluxos de Execução: Direto vs. Modular
 
@@ -79,6 +96,7 @@ Fluxo Modular / Tradicional:
 
 | Comando | O Que Faz | Exemplo de Uso |
 | :--- | :--- | :--- |
+| **`/brutal-crafter`** | **Skill Master & Orquestrador Geral:** Carrega a persona artesanal completa e atende qualquer demanda arquitetural ou de código. | `/brutal-crafter Como isolar o core bancário de APIs legadas?` |
 | **`/bc-craft [-s \| -d] [-j]`** | **Planejamento & Tarefas Unificado:** Gera os 4 pilares de arquitetura e já salva as tarefas atômicas em `.docs/brutal-crafter/tasks_*.md` com suporte a sync Jira MCP (`-j`). *(Aliases: `/bc-pt`, `/bc-plantask`)* | `/bc-craft -s Webhook Pix`<br>`/bc-craft -d -j Gateway pagamentos` |
 | **`/bc-x [-s \| -d] [caminho]`** | **Auditoria de Codebase & Riscos:** Ingestão com `npx repomix` ou fallback nativo automático (`find`/`grep`), varredura de leaks, concorrência, timeouts e anti-patterns. | `/bc-x -s`<br>`/bc-x -d src/Billing` |
 | **`/bc-plan [-s \| -d]`** | **Requisitos & Solução:** Desarma premissas falsas, elimina over-engineering e consolida os 4 pilares arquiteturais. | `/bc-plan -s Criar checkout Pix`<br>`/bc-plan -d Gateway de pagamentos` |
@@ -135,10 +153,14 @@ Toda resposta encerra com a próxima ação bounded recomendada:
 ## 🛠️ Guia de Instalação e Configuração Multiagente
 
 A Skill necessita estritamente de apenas **2 itens** para funcionar:
-1. O arquivo de instruções (`SKILL.md`)
+1. O arquivo de instruções (`SKILL.md`) e os sub-comandos (`skills/bc-*/`)
 2. A pasta com a biblioteca de regras (`agent-rules-books/`)
 
-A base bibliográfica (`agent-rules-books/`) é autossuficiente e vem embutida diretamente na árvore do repositório (não requer submódulos Git). A estratégia de **cópia limpa** garante que apenas esses 2 itens essenciais sejam transferidos para o seu assistente ou projeto, evitando arquivos desnecessários do repositório git e problemas de permissão com links simbólicos (symlinks).
+A base bibliográfica (`agent-rules-books/`) é autossuficiente e vem embutida diretamente na árvore do repositório (não requer submódulos Git). A estratégia de **cópia limpa** garante que apenas esses itens essenciais sejam transferidos para o seu assistente ou projeto, registrando tanto a skill principal `/brutal-crafter` quanto os comandos dedicados `/bc-craft`, `/bc-x`, `/bc-plan`, `/bc-task` e `/bc-dev` no autocomplete do seu chat.
+
+> [!TIP]
+> **⚡ Recomendado (Registra Todos os Comandos `/bc-*` Automaticamente):**
+> Execute o script `./scripts/install.sh` (Linux/macOS) ou `.\scripts\install.ps1` (Windows). Ele detecta automaticamente o Google Antigravity, Gemini CLI, Claude Code e OpenCode e registra **todos** os comandos oficiais (`/bc-craft`, `/bc-x`, `/bc-plan`, `/bc-task`, `/bc-dev`, `/brutal-crafter`) com autocompletion instantâneo.
 
 ---
 
@@ -406,29 +428,29 @@ O **OpenCode** suporta Skills nativamente através do diretório `.opencode/skil
 ---
 
 <a id="scripts-instalacao"></a>
-### 🤖 Scripts Automatizados (`install.sh` / `install.ps1`)
+### 🤖 Scripts Automatizados (`scripts/install.sh` / `scripts/install.ps1`)
 
-O repositório disponibiliza instaladores automatizados que realizam **auto-detecção inteligente** dos ambientes presentes e aplicam a estratégia de cópia limpa ou links simbólicos:
+O repositório disponibiliza instaladores automatizados na pasta `scripts/` que realizam **auto-detecção inteligente** dos ambientes presentes e aplicam a estratégia de cópia limpa ou links simbólicos:
 
 ```bash
 # Linux / macOS:
-./install.sh                    # Auto-detecta ambientes (Antigravity, Gemini, Claude, OpenCode, Codex)
-./install.sh --symlink          # Modo desenvolvimento contínuo (cria links simbólicos)
-./install.sh --all              # Instala e configura em todos os agentes suportados
-./install.sh --project          # Instala localmente no projeto ativo (.cursorrules, CLAUDE.md, etc.)
-./install.sh --uninstall --all  # Remove a skill dos diretórios de agentes
+./scripts/install.sh                    # Auto-detecta ambientes (Antigravity, Gemini, Claude, OpenCode, Codex)
+./scripts/install.sh --symlink          # Modo desenvolvimento contínuo (cria links simbólicos)
+./scripts/install.sh --all              # Instala e configura em todos os agentes suportados
+./scripts/install.sh --project          # Instala localmente no projeto ativo (.cursorrules, CLAUDE.md, etc.)
+./scripts/install.sh --uninstall --all  # Remove a skill dos diretórios de agentes
 ```
 
 ```powershell
 # Windows (PowerShell):
-powershell -ExecutionPolicy Bypass -File .\install.ps1               # Auto-detecta e instala
-powershell -ExecutionPolicy Bypass -File .\install.ps1 -Symlink      # Cria links/junctions para dev
-powershell -ExecutionPolicy Bypass -File .\install.ps1 -All          # Configura todos os agentes
-powershell -ExecutionPolicy Bypass -File .\install.ps1 -Project      # Instala no projeto ativo
-powershell -ExecutionPolicy Bypass -File .\install.ps1 -Uninstall    # Remove a skill
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1               # Auto-detecta e instala
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1 -Symlink      # Cria links/junctions para dev
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1 -All          # Configura todos os agentes
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1 -Project      # Instala no projeto ativo
+powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1 -Uninstall    # Remove a skill
 ```
 
-| Flag Linux (`./install.sh`) | Parâmetro Windows (`.\install.ps1`) | Descrição |
+| Flag Linux (`./scripts/install.sh`) | Parâmetro Windows (`.\scripts\install.ps1`) | Descrição |
 | :--- | :--- | :--- |
 | `-a`, `--all` | `-All` | Configura todos os agentes suportados. |
 | `-g`, `--gemini`, `--antigravity` | `-Gemini`, `-Antigravity` | Instala no Antigravity e Gemini CLI (`~/.antigravity` e `~/.gemini`). |

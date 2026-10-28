@@ -3,11 +3,13 @@
     brutal-crafter - Script de Instalação Universal para Windows (PowerShell)
 
 .DESCRIPTION
-    Instala e configura a skill brutal-crafter para múltiplos assistentes de IA:
+    Instala e configura a skill brutal-crafter e seus comandos oficiais:
+    - /bc-craft, /bc-x, /bc-plan, /bc-task, /bc-dev e /brutal-crafter
+    Para múltiplos assistentes de IA:
     - Google Antigravity (%USERPROFILE%\.antigravity\skills e %USERPROFILE%\.gemini\antigravity-cli\skills)
-    - Gemini CLI & Code Assist (%USERPROFILE%\.gemini\skills)
+    - Gemini CLI & Code Assist (%USERPROFILE%\.gemini\skills e %USERPROFILE%\.gemini\commands)
     - Claude Code (%USERPROFILE%\.claude\skills e local CLAUDE.md)
-    - OpenCode (%USERPROFILE%\.config\opencode\skills e local .opencode\skills)
+    - OpenCode (%USERPROFILE%\.config\opencode\skills, commands e local .opencode)
     - OpenAI Codex / OpenDevin (%USERPROFILE%\.codex\skills)
     - Cursor AI / Windsurf (.cursorrules, .cursor\rules\brutal-crafter.mdc, .windsurfrules)
     - GitHub Copilot (.github\copilot-instructions.md)
@@ -28,7 +30,7 @@
     Instala no Claude Code (%USERPROFILE%\.claude\skills).
 
 .PARAMETER OpenCode
-    Instala no OpenCode (%USERPROFILE%\.config\opencode\skills e %USERPROFILE%\.opencode\skills).
+    Instala no OpenCode (%USERPROFILE%\.config\opencode\skills e commands).
 
 .PARAMETER Codex
     Instala no OpenAI Codex / OpenDevin (%USERPROFILE%\.codex\skills).
@@ -67,30 +69,10 @@
     Cria junção de diretório / link simbólico (ideal para desenvolvimento).
 
 .PARAMETER Copy
-    Força a cópia física limpa dos 2 itens essenciais (padrão).
+    Força a cópia física limpa dos itens essenciais (padrão).
 
 .PARAMETER Uninstall
-    Remove a skill dos alvos selecionados ou de todos.
-
-.EXAMPLE
-    powershell -ExecutionPolicy Bypass -File .\install.ps1
-    # Auto-detecta e instala nos agentes presentes com cópia limpa.
-
-.EXAMPLE
-    powershell -ExecutionPolicy Bypass -File .\install.ps1 -Project
-    # Instala no projeto atual com agent-rules-books e regras locais.
-
-.EXAMPLE
-    powershell -ExecutionPolicy Bypass -File .\install.ps1 -Symlink
-    # Instala criando junções/links simbólicos (ideal para dev).
-
-.EXAMPLE
-    powershell -ExecutionPolicy Bypass -File .\install.ps1 -All
-    # Instala para todos os agentes suportados.
-
-.EXAMPLE
-    powershell -ExecutionPolicy Bypass -File .\install.ps1 -Uninstall -All
-    # Remove a skill de todos os ambientes.
+    Remove a skill e sub-comandos dos alvos selecionados ou de todos.
 #>
 
 [CmdletBinding()]
@@ -119,7 +101,13 @@ param(
 
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+if (Test-Path (Join-Path $RepoRoot "SKILL.md")) {
+    $RepoRoot = $ScriptDir
+} else {
+    $RepoRoot = Split-Path -Parent $ScriptDir
+}
 $SkillName = "brutal-crafter"
+$SubCommands = @("bc-craft", "bc-x", "bc-plan", "bc-task", "bc-dev")
 
 function Write-Info($msg)    { Write-Host "i [INFO] $msg" -ForegroundColor Cyan }
 function Write-Success($msg) { Write-Host "`u{2714} [SUCESSO] $msg" -ForegroundColor Green }
@@ -133,13 +121,21 @@ function Show-HelpMessage {
 ==========================================================
 
 Uso:
-  powershell -ExecutionPolicy Bypass -File .\install.ps1 [OPÇÕES]
+  powershell -ExecutionPolicy Bypass -File .\scripts\install.ps1 [OPÇÕES]
+
+Comandos Oficiais Registrados:
+  /bc-craft              Planejamento 4 pilares + tarefas em disco + Jira MCP em 1 passo
+  /bc-x                  Auditoria de codebase e varredura de riscos com fallback nativo
+  /bc-plan               Planejamento de requisitos em 4 pilares sem over-engineering
+  /bc-task               Detalhamento atômico de tarefas (- [ ]) em .docs/brutal-crafter/
+  /bc-dev                Diretrizes e execução prática (-e) com validação e checklist (- [x])
+  /brutal-crafter        Skill principal integrando todos os fluxos e persona sênior
 
 Opções de Alvo:
   -All                     Instala em todos os agentes suportados
   -Gemini, -Antigravity    Instala no Google Antigravity e Gemini CLI
   -Claude                  Instala no Claude Code (%USERPROFILE%\.claude\skills)
-  -OpenCode                Instala no OpenCode (%USERPROFILE%\.config\opencode\skills)
+  -OpenCode                Instala no OpenCode (%USERPROFILE%\.config\opencode\skills e commands)
   -Codex                   Instala no OpenAI Codex / OpenDevin (%USERPROFILE%\.codex\skills)
   -Project, -Local         Instala no projeto ativo (.cursorrules, CLAUDE.md, .github, .opencode, agent-rules-books)
   -Cursor                  Configura regras para Cursor AI
@@ -152,17 +148,17 @@ Opções de Alvo:
 
 Modos:
   -Symlink                 Usa Junção / Link Simbólico (ideal para desenvolvimento)
-  -Copy                    Cópia limpa dos 2 itens essenciais (padrão)
+  -Copy                    Cópia limpa dos itens essenciais (padrão)
   -Uninstall               Remove a skill dos agentes selecionados
   -Help                    Exibe esta ajuda
 
 Exemplos:
-  .\install.ps1                      # Instalação com auto-detecção inteligente
-  .\install.ps1 -Project             # Instala no projeto ativo com livros de regras
-  .\install.ps1 -OpenCode            # Instala apenas no OpenCode
-  .\install.ps1 -All                 # Instala em todos os agentes
-  .\install.ps1 -Symlink             # Instala com Junction/Symlink
-  .\install.ps1 -Uninstall -All      # Remove de todos os agentes
+  .\scripts\install.ps1                      # Instalação com auto-detecção e registro de /bc-*
+  .\scripts\install.ps1 -Project             # Instala no projeto ativo com livros de regras
+  .\scripts\install.ps1 -OpenCode            # Instala apenas no OpenCode
+  .\scripts\install.ps1 -All                 # Instala em todos os agentes
+  .\scripts\install.ps1 -Symlink             # Instala com Junction/Symlink
+  .\scripts\install.ps1 -Uninstall -All      # Remove de todos os agentes
 "@ -ForegroundColor Yellow
 }
 
@@ -175,72 +171,113 @@ if ($Antigravity) { $Gemini = $true }
 if ($Roo) { $Cline = $true }
 if ($Local) { $Project = $true }
 
-# Valida pasta fonte
-$SkillFile = Join-Path $ScriptDir "SKILL.md"
+$SkillFile = Join-Path $RepoRoot "SKILL.md"
 if (-not (Test-Path $SkillFile)) {
-    Write-Err "SKILL.md não encontrado em $ScriptDir!"
+    Write-Err "SKILL.md não encontrado em $RepoRoot!"
     exit 1
 }
 
-$BooksDir = Join-Path $ScriptDir "agent-rules-books"
+$BooksDir = Join-Path $RepoRoot "agent-rules-books"
 if (-not (Test-Path $BooksDir)) {
     Write-Warn "agent-rules-books\ não encontrado. A skill rodará sem a base de livros clássicos."
 }
 
-# Função de deploy de pasta (cópia limpa dos 2 itens essenciais ou junction/symlink)
-function Deploy-SkillFolder($targetDir, [bool]$asSymlink) {
-    $parent = Split-Path -Parent $targetDir
-    if (-not (Test-Path $parent)) {
-        New-Item -ItemType Directory -Path $parent -Force | Out-Null
+function Deploy-SkillSuite($baseDir, [bool]$asSymlink) {
+    if (-not (Test-Path $baseDir)) {
+        New-Item -ItemType Directory -Path $baseDir -Force | Out-Null
     }
 
-    if (Test-Path $targetDir) {
-        Remove-Item -Path $targetDir -Recurse -Force | Out-Null
+    # 1. Instala a skill principal: brutal-crafter
+    $mainTarget = Join-Path $baseDir $SkillName
+    if (Test-Path $mainTarget) {
+        Remove-Item -Path $mainTarget -Recurse -Force | Out-Null
     }
 
     if ($asSymlink) {
         try {
-            # Tenta Junction (não exige admin no Windows moderno)
-            New-Item -ItemType Junction -Path $targetDir -Target $ScriptDir -ErrorAction Stop | Out-Null
-            Write-Success "Junção (Junction) criada: $targetDir -> $ScriptDir"
-            return
+            New-Item -ItemType Junction -Path $mainTarget -Target $RepoRoot -ErrorAction Stop | Out-Null
+            Write-Success "Skill principal vinculada via Junction: $mainTarget"
         }
         catch {
-            try {
-                New-Item -ItemType SymbolicLink -Path $targetDir -Target $ScriptDir -ErrorAction Stop | Out-Null
-                Write-Success "Link simbólico criado: $targetDir -> $ScriptDir"
-                return
+            New-Item -ItemType Directory -Path $mainTarget -Force | Out-Null
+            Copy-Item -Path (Join-Path $RepoRoot "SKILL.md") -Destination $mainTarget -Force
+            if (Test-Path $BooksDir) {
+                $targetBooks = Join-Path $mainTarget "agent-rules-books"
+                New-Item -ItemType Directory -Path $targetBooks -Force | Out-Null
+                Copy-Item -Path (Join-Path $BooksDir "*") -Destination $targetBooks -Recurse -Force
             }
-            catch {
-                Write-Warn "Não foi possível criar link simbólico ou junction. Realizando cópia física limpa..."
-            }
+            Write-Success "Skill principal copiada: $mainTarget"
         }
+    } else {
+        New-Item -ItemType Directory -Path $mainTarget -Force | Out-Null
+        Copy-Item -Path (Join-Path $RepoRoot "SKILL.md") -Destination $mainTarget -Force
+        if (Test-Path $BooksDir) {
+            $targetBooks = Join-Path $mainTarget "agent-rules-books"
+            New-Item -ItemType Directory -Path $targetBooks -Force | Out-Null
+            Copy-Item -Path (Join-Path $BooksDir "*") -Destination $targetBooks -Recurse -Force
+        }
+        if (Test-Path (Join-Path $RepoRoot "README.md")) { Copy-Item -Path (Join-Path $RepoRoot "README.md") -Destination $mainTarget -Force }
+        if (Test-Path (Join-Path $RepoRoot "LICENSE")) { Copy-Item -Path (Join-Path $RepoRoot "LICENSE") -Destination $mainTarget -Force }
+        Copy-Item -Path (Join-Path $mainTarget "SKILL.md") -Destination (Join-Path $mainTarget "CLAUDE.md") -Force
+        Copy-Item -Path (Join-Path $mainTarget "SKILL.md") -Destination (Join-Path $mainTarget ".cursorrules") -Force
+        Write-Success "Skill principal copiada: $mainTarget"
     }
 
-    # Cópia física limpa dos 2 itens essenciais: SKILL.md e agent-rules-books\
-    New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
-    Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $targetDir -Force
+    # 2. Instala cada sub-comando como skill dedicada para aparecer no autocomplete /bc-*
+    foreach ($cmd in $SubCommands) {
+        $cmdTarget = Join-Path $baseDir $cmd
+        if (Test-Path $cmdTarget) {
+            Remove-Item -Path $cmdTarget -Recurse -Force | Out-Null
+        }
 
-    if (Test-Path $BooksDir) {
-        $targetBooksDir = Join-Path $targetDir "agent-rules-books"
-        New-Item -ItemType Directory -Path $targetBooksDir -Force | Out-Null
-        Copy-Item -Path (Join-Path $BooksDir "*") -Destination $targetBooksDir -Recurse -Force
-    }
+        $sourceCmdDir = Join-Path (Join-Path $RepoRoot "skills") $cmd
+        if ($asSymlink -and (Test-Path $sourceCmdDir)) {
+            try {
+                New-Item -ItemType Junction -Path $cmdTarget -Target $sourceCmdDir -ErrorAction Stop | Out-Null
+                if (Test-Path $BooksDir) {
+                    $cmdBooks = Join-Path $cmdTarget "agent-rules-books"
+                    if (-not (Test-Path $cmdBooks)) {
+                        New-Item -ItemType Junction -Path $cmdBooks -Target $BooksDir -Force -ErrorAction SilentlyContinue | Out-Null
+                    }
+                }
+                Write-Success "Comando /$cmd registrado via Junction: $cmdTarget"
+                continue
+            }
+            catch {}
+        }
 
-    if (Test-Path (Join-Path $ScriptDir "README.md")) {
-        Copy-Item -Path (Join-Path $ScriptDir "README.md") -Destination $targetDir -Force
-    }
-    if (Test-Path (Join-Path $ScriptDir "LICENSE")) {
-        Copy-Item -Path (Join-Path $ScriptDir "LICENSE") -Destination $targetDir -Force
-    }
+        New-Item -ItemType Directory -Path $cmdTarget -Force | Out-Null
+        $cmdSkillFile = Join-Path $sourceCmdDir "SKILL.md"
+        if (Test-Path $cmdSkillFile) {
+            Copy-Item -Path $cmdSkillFile -Destination $cmdTarget -Force
+        } else {
+            Copy-Item -Path (Join-Path $RepoRoot "SKILL.md") -Destination $cmdTarget -Force
+        }
 
-    # Aliases de compatibilidade
-    Copy-Item -Path (Join-Path $targetDir "SKILL.md") -Destination (Join-Path $targetDir "CLAUDE.md") -Force
-    Copy-Item -Path (Join-Path $targetDir "SKILL.md") -Destination (Join-Path $targetDir ".cursorrules") -Force
-    Write-Success "Cópia limpa realizada com sucesso para: $targetDir"
+        if (Test-Path $BooksDir) {
+            $cmdBooksDir = Join-Path $cmdTarget "agent-rules-books"
+            New-Item -ItemType Directory -Path $cmdBooksDir -Force | Out-Null
+            Copy-Item -Path (Join-Path $BooksDir "*") -Destination $cmdBooksDir -Recurse -Force
+        }
+        Write-Success "Comando /$cmd registrado com cópia limpa: $cmdTarget"
+    }
 }
 
-# Deploy no projeto ativo local
+function Remove-SkillSuite($baseDir) {
+    $mainTarget = Join-Path $baseDir $SkillName
+    if (Test-Path $mainTarget) {
+        Remove-Item -Path $mainTarget -Recurse -Force | Out-Null
+        Write-Success "Removido: $mainTarget"
+    }
+    foreach ($cmd in $SubCommands) {
+        $cmdTarget = Join-Path $baseDir $cmd
+        if (Test-Path $cmdTarget) {
+            Remove-Item -Path $cmdTarget -Recurse -Force | Out-Null
+            Write-Success "Removido: $cmdTarget"
+        }
+    }
+}
+
 function Deploy-ProjectLocal([bool]$asSymlink) {
     $currentDir = (Get-Location).Path
     Write-Info "Instalando no projeto ativo ($currentDir)..."
@@ -251,31 +288,13 @@ function Deploy-ProjectLocal([bool]$asSymlink) {
     $copilotInstructions = Join-Path $githubDir "copilot-instructions.md"
     $localBooksDir = Join-Path $currentDir "agent-rules-books"
     $localOpenCodeDir = Join-Path $currentDir ".opencode\skills\$SkillName"
+    $localCommandsDir = Join-Path $currentDir ".opencode\command"
 
     if (-not (Test-Path $githubDir)) { New-Item -ItemType Directory -Path $githubDir -Force | Out-Null }
 
-    if ($asSymlink) {
-        try {
-            New-Item -ItemType SymbolicLink -Path $cursorRules -Target (Join-Path $ScriptDir "SKILL.md") -Force | Out-Null
-            New-Item -ItemType SymbolicLink -Path $claudeMd -Target (Join-Path $ScriptDir "SKILL.md") -Force | Out-Null
-            New-Item -ItemType SymbolicLink -Path $copilotInstructions -Target (Join-Path $ScriptDir "SKILL.md") -Force | Out-Null
-            if (Test-Path $BooksDir) {
-                New-Item -ItemType Junction -Path $localBooksDir -Target $BooksDir -Force | Out-Null
-            }
-            $openCodeParent = Split-Path -Parent $localOpenCodeDir
-            if (-not (Test-Path $openCodeParent)) { New-Item -ItemType Directory -Path $openCodeParent -Force | Out-Null }
-            New-Item -ItemType Junction -Path $localOpenCodeDir -Target $ScriptDir -Force | Out-Null
-            Write-Success "Symlinks/Junctions criados no projeto ativo (.cursorrules, CLAUDE.md, .github, .opencode, agent-rules-books)."
-            return
-        }
-        catch {
-            Write-Warn "Falha ao criar symlink no projeto ativo. Realizando cópia física limpa..."
-        }
-    }
-
-    Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $cursorRules -Force
-    Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $claudeMd -Force
-    Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $copilotInstructions -Force
+    Copy-Item -Path (Join-Path $RepoRoot "SKILL.md") -Destination $cursorRules -Force
+    Copy-Item -Path (Join-Path $RepoRoot "SKILL.md") -Destination $claudeMd -Force
+    Copy-Item -Path (Join-Path $RepoRoot "SKILL.md") -Destination $copilotInstructions -Force
 
     if (Test-Path $BooksDir) {
         if (-not (Test-Path $localBooksDir)) { New-Item -ItemType Directory -Path $localBooksDir -Force | Out-Null }
@@ -283,23 +302,20 @@ function Deploy-ProjectLocal([bool]$asSymlink) {
     }
 
     if (-not (Test-Path $localOpenCodeDir)) { New-Item -ItemType Directory -Path $localOpenCodeDir -Force | Out-Null }
-    Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $localOpenCodeDir -Force
+    Copy-Item -Path (Join-Path $RepoRoot "SKILL.md") -Destination $localOpenCodeDir -Force
     if (Test-Path $BooksDir) {
         $opencodeBooks = Join-Path $localOpenCodeDir "agent-rules-books"
         if (-not (Test-Path $opencodeBooks)) { New-Item -ItemType Directory -Path $opencodeBooks -Force | Out-Null }
         Copy-Item -Path (Join-Path $BooksDir "*") -Destination $opencodeBooks -Recurse -Force
     }
 
-    Write-Success "Cópia limpa realizada no projeto ativo (.cursorrules, CLAUDE.md, .github, .opencode, agent-rules-books)."
-}
-
-function Remove-SkillFolder($targetDir) {
-    if (Test-Path $targetDir) {
-        Remove-Item -Path $targetDir -Recurse -Force | Out-Null
-        Write-Success "Removido: $targetDir"
-    } else {
-        Write-Info "Não instalado ou já removido: $targetDir"
+    $sourceOpenCodeCommands = Join-Path $RepoRoot ".opencode\command"
+    if (Test-Path $sourceOpenCodeCommands) {
+        if (-not (Test-Path $localCommandsDir)) { New-Item -ItemType Directory -Path $localCommandsDir -Force | Out-Null }
+        Copy-Item -Path (Join-Path $sourceOpenCodeCommands "*") -Destination $localCommandsDir -Recurse -Force
     }
+
+    Write-Success "Cópia limpa realizada no projeto ativo (.cursorrules, CLAUDE.md, .github, .opencode, agent-rules-books)."
 }
 
 function Configure-CursorRule([bool]$asSymlink) {
@@ -307,30 +323,12 @@ function Configure-CursorRule([bool]$asSymlink) {
     $cursorRules = Join-Path $currentDir ".cursorrules"
     $localBooksDir = Join-Path $currentDir "agent-rules-books"
 
-    if ($asSymlink) {
-        try {
-            New-Item -ItemType SymbolicLink -Path $cursorRules -Target (Join-Path $ScriptDir "SKILL.md") -Force | Out-Null
-            if (Test-Path $BooksDir) {
-                New-Item -ItemType Junction -Path $localBooksDir -Target $BooksDir -Force | Out-Null
-            }
-            Write-Success "Regra Cursor configurada via symlink (.cursorrules -> SKILL.md)"
-        }
-        catch {
-            Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $cursorRules -Force
-            if (Test-Path $BooksDir) {
-                if (-not (Test-Path $localBooksDir)) { New-Item -ItemType Directory -Path $localBooksDir -Force | Out-Null }
-                Copy-Item -Path (Join-Path $BooksDir "*") -Destination $localBooksDir -Recurse -Force
-            }
-            Write-Success "Regra Cursor e agent-rules-books copiados (.cursorrules)"
-        }
-    } else {
-        Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $cursorRules -Force
-        if (Test-Path $BooksDir) {
-            if (-not (Test-Path $localBooksDir)) { New-Item -ItemType Directory -Path $localBooksDir -Force | Out-Null }
-            Copy-Item -Path (Join-Path $BooksDir "*") -Destination $localBooksDir -Recurse -Force
-        }
-        Write-Success "Regra Cursor e agent-rules-books copiados (.cursorrules)"
+    Copy-Item -Path (Join-Path $RepoRoot "SKILL.md") -Destination $cursorRules -Force
+    if (Test-Path $BooksDir) {
+        if (-not (Test-Path $localBooksDir)) { New-Item -ItemType Directory -Path $localBooksDir -Force | Out-Null }
+        Copy-Item -Path (Join-Path $BooksDir "*") -Destination $localBooksDir -Recurse -Force
     }
+    Write-Success "Regra Cursor e agent-rules-books copiados (.cursorrules)"
 
     $userProfile = [System.Environment]::GetFolderPath('UserProfile')
     $globalDir = Join-Path $userProfile ".cursor\rules"
@@ -386,21 +384,7 @@ function Configure-CopilotRule([bool]$asSymlink) {
     $destFile = Join-Path $githubDir "copilot-instructions.md"
     $localBooksDir = Join-Path $currentDir "agent-rules-books"
 
-    if ($asSymlink) {
-        try {
-            New-Item -ItemType SymbolicLink -Path $destFile -Target (Join-Path $ScriptDir "SKILL.md") -Force | Out-Null
-            if (Test-Path $BooksDir) {
-                New-Item -ItemType Junction -Path $localBooksDir -Target $BooksDir -Force | Out-Null
-            }
-            Write-Success "Instruções do Copilot configuradas via symlink ($destFile)"
-            return
-        }
-        catch {
-            Write-Warn "Falha ao criar symlink para Copilot. Realizando cópia física..."
-        }
-    }
-
-    Copy-Item -Path (Join-Path $ScriptDir "SKILL.md") -Destination $destFile -Force
+    Copy-Item -Path (Join-Path $RepoRoot "SKILL.md") -Destination $destFile -Force
     if (Test-Path $BooksDir) {
         if (-not (Test-Path $localBooksDir)) { New-Item -ItemType Directory -Path $localBooksDir -Force | Out-Null }
         Copy-Item -Path (Join-Path $BooksDir "*") -Destination $localBooksDir -Recurse -Force
@@ -463,7 +447,6 @@ Comandos suportados: /bc-x, /bc-plan, /bc-task, /bc-craft, /bc-dev (flags -s, -d
     Write-Success "Prompt Continue.dev gerado: $destFile"
 }
 
-# Auto-detecção se nenhum alvo foi informado
 $userProfile = [System.Environment]::GetFolderPath('UserProfile')
 if (-not $All -and -not $Gemini -and -not $Claude -and -not $OpenCode -and -not $Codex -and -not $Project -and -not $Cursor -and -not $Windsurf -and -not $Copilot -and -not $Cline -and -not $Aider -and -not $Continue -and ($Target -eq "")) {
     if ((Test-Path (Join-Path $userProfile ".antigravity")) -or (Test-Path (Join-Path $userProfile ".gemini"))) { $Gemini = $true }
@@ -471,7 +454,6 @@ if (-not $All -and -not $Gemini -and -not $Claude -and -not $OpenCode -and -not 
     if ((Test-Path (Join-Path $userProfile ".config\opencode")) -or (Test-Path (Join-Path $userProfile ".opencode"))) { $OpenCode = $true }
     if (Test-Path (Join-Path $userProfile ".codex")) { $Codex = $true }
 
-    # Fallback se nada for detectado
     if (-not $Gemini -and -not $Claude -and -not $OpenCode) {
         $Gemini = $true
         $Claude = $true
@@ -497,61 +479,66 @@ Write-Host "==========================================================" -Foregro
 Write-Host " 🧠 brutal-crafter - Instalador Universal Windows (PowerShell)" -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-# Desinstalação
 if ($Uninstall) {
-    Write-Warn "Iniciando desinstalação do brutal-crafter..."
+    Write-Warn "Iniciando desinstalação do brutal-crafter e comandos..."
     if ($Gemini) {
-        Remove-SkillFolder (Join-Path $userProfile ".antigravity\skills\$SkillName")
-        Remove-SkillFolder (Join-Path $userProfile ".gemini\skills\$SkillName")
-        Remove-SkillFolder (Join-Path $userProfile ".gemini\antigravity-cli\skills\$SkillName")
+        Remove-SkillSuite (Join-Path $userProfile ".antigravity\skills")
+        Remove-SkillSuite (Join-Path $userProfile ".gemini\skills")
+        Remove-SkillSuite (Join-Path $userProfile ".gemini\antigravity-cli\skills")
     }
     if ($Claude) {
-        Remove-SkillFolder (Join-Path $userProfile ".claude\skills\$SkillName")
+        Remove-SkillSuite (Join-Path $userProfile ".claude\skills")
     }
     if ($OpenCode) {
-        Remove-SkillFolder (Join-Path $userProfile ".config\opencode\skills\$SkillName")
-        Remove-SkillFolder (Join-Path $userProfile ".opencode\skills\$SkillName")
+        Remove-SkillSuite (Join-Path $userProfile ".config\opencode\skills")
+        Remove-SkillSuite (Join-Path $userProfile ".opencode\skills")
     }
     if ($Codex) {
-        Remove-SkillFolder (Join-Path $userProfile ".codex\skills\$SkillName")
+        Remove-SkillSuite (Join-Path $userProfile ".codex\skills")
     }
     if ($Target -ne "") {
-        Remove-SkillFolder $Target
+        Remove-SkillSuite $Target
     }
     Write-Success "Desinstalação concluída."
     exit 0
 }
 
-$deployMode = if ($Symlink) { "Symlink / Junction (Desenvolvimento)" } else { "Cópia Limpa (2 itens essenciais)" }
+$deployMode = if ($Symlink) { "Symlink / Junction (Desenvolvimento)" } else { "Cópia Limpa" }
 Write-Info "Modo de deploy: $deployMode"
 
 # 1. Antigravity & Gemini CLI
 if ($Gemini) {
-    Write-Info "Instalando para Google Antigravity & Gemini CLI..."
-    Deploy-SkillFolder (Join-Path $userProfile ".antigravity\skills\$SkillName") $Symlink
-    Deploy-SkillFolder (Join-Path $userProfile ".gemini\skills\$SkillName") $Symlink
-    Deploy-SkillFolder (Join-Path $userProfile ".gemini\antigravity-cli\skills\$SkillName") $Symlink
+    Write-Info "Instalando para Google Antigravity & Gemini CLI (registrando /bc-* e /brutal-crafter)..."
+    Deploy-SkillSuite (Join-Path $userProfile ".antigravity\skills") $Symlink
+    Deploy-SkillSuite (Join-Path $userProfile ".gemini\skills") $Symlink
+    Deploy-SkillSuite (Join-Path $userProfile ".gemini\antigravity-cli\skills") $Symlink
 }
 
 # 2. Claude Code
 if ($Claude) {
     Write-Info "Instalando para Claude Code..."
-    Deploy-SkillFolder (Join-Path $userProfile ".claude\skills\$SkillName") $Symlink
+    Deploy-SkillSuite (Join-Path $userProfile ".claude\skills") $Symlink
 }
 
 # 3. OpenCode
 if ($OpenCode) {
     Write-Info "Instalando para OpenCode..."
-    Deploy-SkillFolder (Join-Path $userProfile ".config\opencode\skills\$SkillName") $Symlink
+    Deploy-SkillSuite (Join-Path $userProfile ".config\opencode\skills") $Symlink
+    $sourceOpenCodeCommands = Join-Path $RepoRoot ".opencode\command"
+    if (Test-Path $sourceOpenCodeCommands) {
+        $destOpenCodeCommands = Join-Path $userProfile ".config\opencode\command"
+        if (-not (Test-Path $destOpenCodeCommands)) { New-Item -ItemType Directory -Path $destOpenCodeCommands -Force | Out-Null }
+        Copy-Item -Path (Join-Path $sourceOpenCodeCommands "*") -Destination $destOpenCodeCommands -Recurse -Force
+    }
     if (Test-Path (Join-Path $userProfile ".opencode")) {
-        Deploy-SkillFolder (Join-Path $userProfile ".opencode\skills\$SkillName") $Symlink
+        Deploy-SkillSuite (Join-Path $userProfile ".opencode\skills") $Symlink
     }
 }
 
 # 4. OpenAI Codex / OpenDevin
 if ($Codex) {
     Write-Info "Instalando para OpenAI Codex / OpenDevin..."
-    Deploy-SkillFolder (Join-Path $userProfile ".codex\skills\$SkillName") $Symlink
+    Deploy-SkillSuite (Join-Path $userProfile ".codex\skills") $Symlink
 }
 
 # 5. Projeto Ativo (Local)
@@ -598,9 +585,15 @@ if ($Continue) {
 # 12. Custom Target
 if ($Target -ne "") {
     Write-Info "Instalando no diretório customizado: $Target..."
-    Deploy-SkillFolder $Target $Symlink
+    Deploy-SkillSuite $Target $Symlink
 }
 
 Write-Host "==========================================================" -ForegroundColor Green
-Write-Success "Pronto! brutal-crafter instalado com sucesso."
-Write-Info "Comandos disponíveis no seu agente: /bc-x, /bc-plan, /bc-task, /bc-craft, /bc-dev"
+Write-Success "Pronto! brutal-crafter e comandos oficiais instalados com sucesso."
+Write-Host "Comandos disponíveis no seu assistente:" -ForegroundColor Yellow
+Write-Host "  /bc-craft [-s|-d] [-j]   (Planejamento 4 pilares + tarefas em disco + Jira em 1 passo)" -ForegroundColor Cyan
+Write-Host "  /bc-x [-s|-d] [caminho]  (Auditoria de codebase com repomix ou fallback nativo)" -ForegroundColor Cyan
+Write-Host "  /bc-plan [-s|-d]          (Requisitos e arquitetura em 4 pilares)" -ForegroundColor Cyan
+Write-Host "  /bc-task [-s|-d] [-j]     (Detalhamento atômico em .docs/brutal-crafter/)" -ForegroundColor Cyan
+Write-Host "  /bc-dev [-s|-d|-e]       (Diretrizes e execução hands-on com testes e checklist)" -ForegroundColor Cyan
+Write-Host "  /brutal-crafter           (Skill principal integrando todos os fluxos)" -ForegroundColor Cyan
