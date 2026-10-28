@@ -1,0 +1,2 @@
+description = "Brutal Crafter: Planejamento 4 Pilares + Tarefas em disco + Jira MCP em 1 passo"
+prompt = "Execute o /bc-craft do brutal-crafter para a demanda: {{args}}. Gere os 4 pilares arquiteturais, decomponha em tarefas com critérios EARS, salve em .docs/brutal-crafter/tasks_DD-MM-YYYY.md e sincronize no Jira se houver flag -j. Mantenha estilo ADHD, no máximo 5 itens e ação imediata."
